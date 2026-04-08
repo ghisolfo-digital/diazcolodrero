@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vamos a conocernos DG-DC1</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      margin: 0;
+      padding: 32px 16px 48px;
+      text-align: center;
+      color: #222;
+    }
+
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .page-header {
+      margin-bottom: 28px;
+    }
+
+    .page-header h1 {
+      margin: 0;
+      font-size: 30px;
+      line-height: 1.2;
+    }
+
+    .chart-module {
+      background: #fff;
+      border: 1px solid #e8e8e8;
+      border-radius: 20px;
+      padding: 28px 24px;
+      margin-top: 28px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
+      text-align: left;
+    }
+
+    .chart-title {
+      font-size: 22px;
+      line-height: 1.35;
+      margin: 0 0 24px;
+      text-align: center;
+    }
+
+    .chart-area {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 32px;
+      flex-wrap: wrap;
+    }
+
+    .chart-svg {
+      width: 320px;
+      height: 320px;
+      display: block;
+      flex: 0 0 auto;
+    }
+
+    .legend {
+      text-align: left;
+      min-width: 220px;
+      max-width: 360px;
+    }
+
+    .legend div {
+      margin: 8px 0;
+      font-size: 15px;
+      line-height: 1.35;
+    }
+
+    .color-box {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      margin-right: 8px;
+      border-radius: 3px;
+      vertical-align: middle;
+      flex: 0 0 auto;
+    }
+
+    .total {
+      margin-top: 18px;
+      font-size: 14px;
+      color: #666;
+      text-align: center;
+    }
+
+    #status {
+      margin-top: 14px;
+      font-size: 14px;
+      color: #888;
+      text-align: center;
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 20px 12px 36px;
+      }
+
+      .page-header h1 {
+        font-size: 24px;
+      }
+
+      .chart-module {
+        padding: 22px 16px;
+        margin-top: 20px;
+        border-radius: 16px;
+      }
+
+      .chart-title {
+        font-size: 19px;
+      }
+
+      .chart-svg {
+        width: 280px;
+        height: 280px;
+      }
+
+      .legend {
+        min-width: 0;
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="page-header">
+      <h1>Vamos a conocernos DG-DC4</h1>
+      <div id="status">Cargando datos...</div>
+    </div>
+
+    <div id="charts-container"></div>
+  </div>
+
+  <script>
+    const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSraOXMM-SRKZ-FjNgVMZfWGuTWF8mU4a5tgQaEHBvBSUVH9LXgt6JMZeQgpWlO0v68tbzMc7IpsHMj/pub?gid=1561018663&single=true&output=csv";
+
+    function parseCSV(text) {
+      const rows = [];
+      let row = [];
+      let cell = "";
+      let inQuotes = false;
+
+      for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        const nextChar = text[i + 1];
+
+        if (char === '"') {
+          if (inQuotes && nextChar === '"') {
+            cell += '"';
+            i++;
+          } else {
+            inQuotes = !inQuotes;
+          }
+        } else if (char === "," && !inQuotes) {
+          row.push(cell);
+          cell = "";
+        } else if ((char === "\n" || char === "\r") && !inQuotes) {
+          if (char === "\r" && nextChar === "\n") {
+            i++;
+          }
+          row.push(cell);
+          rows.push(row);
+          row = [];
+          cell = "";
+        } else {
+          cell += char;
+        }
+      }
+
+      row.push(cell);
+      rows.push(row);
+
+      return rows;
+    }
+
+    async function loadCSVData() {
+      const response = await fetch(CSV_URL);
+
+      if (!response.ok) {
+        throw new Error("No se pudo cargar el CSV");
+      }
+
+      const text = await response.text();
+      return parseCSV(text.trim());
+    }
+  </script>
+
+  <script>
+    // Índices:
+    // I = 8
+    // J = 9
+    // K = 10
+    // L = 11
+
+    function polarToCartesian(cx, cy, r, angleDeg) {
+      const angleRad = (angleDeg - 90) * Math.PI / 180.0;
+      return {
+        x: cx + (r * Math.cos(angleRad)),
+        y: cy + (r * Math.sin(angleRad))
+      };
+    }
+
+    function describeArcSlice(cx, cy, r, startAngle, endAngle) {
+      const start = polarToCartesian(cx, cy, r, endAngle);
+      const end = polarToCartesian(cx, cy, r, startAngle);
+      const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
+
+      return [
+        "M", cx, cy,
+        "L", start.x, start.y,
+        "A", r, r, 0, largeArcFlag, 0, end.x, end.y,
+        "Z"
+      ].join(" ");
+    }
+
+    function normalizeValue(value) {
+      return (value || "").trim();
+    }
+
+    function countByOptions(data, columnIndex, allowedOptions) {
+      const counts = {};
+      allowedOptions.forEach(option => {
+        counts[option] = 0;
+      });
+
+      data.forEach(row => {
+        const val = normalizeValue(row[columnIndex]);
+        if (val in counts) {
+          counts[val]++;
+        }
+      });
+
+      return counts;
+    }
+
+    function createChartModule(config) {
+      const container = document.getElementById("charts-container");
+
+      const module = document.createElement("section");
+      module.className = "chart-module";
+
+      const title = document.createElement("h2");
+      title.className = "chart-title";
+      title.textContent = config.title;
+
+      const chartArea = document.createElement("div");
+      chartArea.className = "chart-area";
+
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      svg.setAttribute("id", config.chartId);
+      svg.setAttribute("viewBox", "0 0 320 320");
+      svg.setAttribute("aria-label", config.title);
+      svg.setAttribute("class", "chart-svg");
+
+      const legend = document.createElement("div");
+      legend.className = "legend";
+      legend.id = config.legendId;
+
+      const total = document.createElement("div");
+      total.className = "total";
+      total.id = config.totalId;
+
+      chartArea.appendChild(svg);
+      chartArea.appendChild(legend);
+
+      module.appendChild(title);
+      module.appendChild(chartArea);
+      module.appendChild(total);
+
+      container.appendChild(module);
+    }
+
+    function drawPieSVG(svgId, legendId, totalId, counts, colors, labelOrder) {
+      const total = Object.values(counts).reduce((sum, value) => sum + value, 0);
+
+      const svg = document.getElementById(svgId);
+      const legend = document.getElementById(legendId);
+      const totalEl = document.getElementById(totalId);
+
+      svg.innerHTML = "";
+      legend.innerHTML = "";
+
+      if (total === 0) {
+        totalEl.textContent = "Total respuestas: 0";
+        legend.innerHTML = "<div>No hay respuestas válidas.</div>";
+        return;
+      }
+
+      const cx = 160;
+      const cy = 160;
+      const r = 120;
+      let currentAngle = 0;
+
+      labelOrder.forEach(key => {
+        const value = counts[key];
+        if (value === 0) return;
+
+        const sliceAngle = (value / total) * 360;
+        const startAngle = currentAngle;
+        const endAngle = currentAngle + sliceAngle;
+
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute("d", describeArcSlice(cx, cy, r, startAngle, endAngle));
+        path.setAttribute("fill", colors[key] || "#cccccc");
+        svg.appendChild(path);
+
+        currentAngle = endAngle;
+      });
+
+      labelOrder.forEach(key => {
+        const value = counts[key];
+        if (value === 0) return;
+
+        const percent = total ? Math.round((value / total) * 100) : 0;
+
+        const item = document.createElement("div");
+        item.innerHTML = `
+          <span class="color-box" style="background:${colors[key] || '#cccccc'}"></span>
+          ${key}: ${value} (${percent}%)
+        `;
+        legend.appendChild(item);
+      });
+
+      totalEl.textContent = "Total respuestas: " + total;
+    }
+
+    async function initCharts() {
+      const statusEl = document.getElementById("status");
+
+      try {
+        const rows = await loadCSVData();
+        const data = rows.slice(1);
+
+        // 1) Proyectual
+        createChartModule({
+          title: "¿En qué cátedra cursaste Proyectual?",
+          chartId: "chart-i",
+          legendId: "legend-i",
+          totalId: "total-i"
+        });
+
+        const countsI = countByOptions(data, 8, [
+          "Ex Arias Incolla",
+          "Delannoy",
+          "Ecenarro",
+          "Ex Fevre",
+          "Garcia G",
+          "Goldestein",
+          "Marcos",
+          "Miglioli",
+          "Najmias",
+          "Ex Pedro",
+          "Pradelli",
+          "Rebagliati",
+          "ExSaldaña",
+          "Sordelli (UBAXXI)",
+          "Speranza",
+          "Taramasso",
+          "Ex Valentino",
+          "No me acuerdo"
+        ]);
+
+        drawPieSVG(
+          "chart-i",
+          "legend-i",
+          "total-i",
+          countsI,
+          {
+            "Ex Arias Incolla": "#b388ff",
+            "Delannoy": "#7c4dff",
+            "Ecenarro": "#4dabf7",
+            "Ex Fevre": "#15aabf",
+            "Garcia G": "#37b24d",
+            "Goldestein": "#82c91e",
+            "Marcos": "#fab005",
+            "Miglioli": "#f783ac",
+            "Najmias": "#ff922b",
+            "Ex Pedro": "#ff6b6b",
+            "Pradelli": "#f59f00",
+            "Rebagliati": "#e64980",
+            "ExSaldaña": "#5c940d",
+            "Sordelli (UBAXXI)": "#339af0",
+            "Speranza": "#748ffc",
+            "Taramasso": "#63e6be",
+            "Ex Valentino": "#be4bdb",
+            "No me acuerdo": "#868e96"
+          },
+          [
+            "Ex Arias Incolla",
+            "Delannoy",
+            "Ecenarro",
+            "Ex Fevre",
+            "Garcia G",
+            "Goldestein",
+            "Marcos",
+            "Miglioli",
+            "Najmias",
+            "Ex Pedro",
+            "Pradelli",
+            "Rebagliati",
+            "ExSaldaña",
+            "Sordelli (UBAXXI)",
+            "Speranza",
+            "Taramasso",
+            "Ex Valentino",
+            "No me acuerdo"
+          ]
+        );
+
+        // 2) Dibujo
+        createChartModule({
+          title: "¿En qué cátedra cursaste Dibujo?",
+          chartId: "chart-j",
+          legendId: "legend-j",
+          totalId: "total-j"
+        });
+
+        const countsJ = countByOptions(data, 9, [
+          "Ex Barbosa",
+          "Corbelle",
+          "Derecho",
+          "Figueroa",
+          "Galiana (UBAXXI)",
+          "Gavito",
+          "Jacoby",
+          "Ex Murgia",
+          "Pellicer",
+          "Ex Perrone",
+          "Ex Romano",
+          "Rodrigues Gesualdi",
+          "Stella Garcia",
+          "No me acuerdo"
+        ]);
+
+        drawPieSVG(
+          "chart-j",
+          "legend-j",
+          "total-j",
+          countsJ,
+          {
+            "Ex Barbosa": "#ff922b",
+            "Corbelle": "#ff6b6b",
+            "Derecho": "#f06595",
+            "Figueroa": "#4dabf7",
+            "Galiana (UBAXXI)": "#339af0",
+            "Gavito": "#63e6be",
+            "Jacoby": "#51cf66",
+            "Ex Murgia": "#74c0fc",
+            "Pellicer": "#fcc419",
+            "Ex Perrone": "#fd7e14",
+            "Ex Romano": "#845ef7",
+            "Rodrigues Gesualdi": "#12b886",
+            "Stella Garcia": "#be4bdb",
+            "No me acuerdo": "#495057"
+          },
+          [
+            "Ex Barbosa",
+            "Corbelle",
+            "Derecho",
+            "Figueroa",
+            "Galiana (UBAXXI)",
+            "Gavito",
+            "Jacoby",
+            "Ex Murgia",
+            "Pellicer",
+            "Ex Perrone",
+            "Ex Romano",
+            "Rodrigues Gesualdi",
+            "Stella Garcia",
+            "No me acuerdo"
+          ]
+        );
+
+        // 3) Viaje a FADU
+        createChartModule({
+          title: "Del 0 al 5, ¿Cuánto considerás que viajás para llegar a FADU?",
+          chartId: "chart-k",
+          legendId: "legend-k",
+          totalId: "total-k"
+        });
+
+        const countsK = countByOptions(data, 10, ["0", "1", "2", "3", "4", "5"]);
+
+        drawPieSVG(
+          "chart-k",
+          "legend-k",
+          "total-k",
+          countsK,
+          {
+            "0": "#ffd43b",
+            "1": "#fab005",
+            "2": "#fd7e14",
+            "3": "#f76707",
+            "4": "#c2255c",
+            "5": "#862e9c"
+          },
+          ["0", "1", "2", "3", "4", "5"]
+        );
+
+        // 4) Uso de programas de diseño
+        createChartModule({
+          title: "Del 0 al 5, ¿Cuánto considerás que sabés usar los programas de diseño (Photoshop e Illustrator)?",
+          chartId: "chart-l",
+          legendId: "legend-l",
+          totalId: "total-l"
+        });
+
+        const countsL = countByOptions(data, 11, ["0", "1", "2", "3", "4", "5"]);
+
+        drawPieSVG(
+          "chart-l",
+          "legend-l",
+          "total-l",
+          countsL,
+          {
+            "0": "#d9480f",
+            "1": "#fd7e14",
+            "2": "#fcc419",
+            "3": "#51cf66",
+            "4": "#38d9a9",
+            "5": "#74c0fc"
+          },
+          ["0", "1", "2", "3", "4", "5"]
+        );
+
+        statusEl.textContent = "";
+      } catch (error) {
+        console.error(error);
+        statusEl.textContent = "Error al cargar los datos.";
+      }
+    }
+
+    initCharts();
+  </script>
+</body>
+</html>
