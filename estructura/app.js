@@ -274,11 +274,20 @@ function obtenerAniosDisponibles(tables) {
 function cargarSelectorDeAnios(anios) {
   if (!$yearSelector) return;
 
-  $yearSelector.innerHTML = anios
+  const anioActual = new Date().getFullYear();
+
+  const aniosOrdenados = [...anios].sort((a, b) => Number(a) - Number(b));
+
+  const anioDefault =
+    aniosOrdenados
+      .filter(a => Number(a) <= anioActual)
+      .at(-1) || aniosOrdenados[0] || "2026";
+
+  $yearSelector.innerHTML = aniosOrdenados
     .map(anio => `<option value="${escapeHTML(anio)}">${escapeHTML(anio)}</option>`)
     .join("");
 
-  CURRENT_YEAR = anios[0] || "2026";
+  CURRENT_YEAR = anioDefault;
   $yearSelector.value = CURRENT_YEAR;
 }
 
