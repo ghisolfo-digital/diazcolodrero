@@ -183,6 +183,53 @@ h1 {
   color: #000;
 }
 
+.commission-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.commission-name {
+  flex: 1;
+}
+
+.commission-toggle {
+  flex: 0 0 auto;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #c9c9c0;
+  border-radius: 999px;
+  background: #fff;
+  color: #595957;
+  font-family: inherit;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform .18s ease, background .18s ease, border-color .18s ease;
+}
+
+.commission-toggle span {
+  display: block;
+  transform: translateY(-1px);
+  transition: transform .18s ease;
+}
+
+.commission-toggle:hover {
+  border-color: #000;
+  color: #000;
+}
+
+.commission.is-collapsed .commission-team {
+  display: none;
+}
+
+.commission.is-collapsed .commission-toggle span {
+  transform: rotate(-90deg) translateX(1px);
+}
+
 .aula {
   font-size: 13px;
   font-weight: 750;

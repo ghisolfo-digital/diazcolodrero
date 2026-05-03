@@ -4,6 +4,7 @@ const $root = document.querySelector("#organigrama");
 const $yearSelector = document.querySelector("#year-selector");
 
 let CURRENT_YEAR = String(new Date().getFullYear());
+const collapsedCommissions = new Set();
 
 /* =========================
    HELPERS
@@ -392,15 +393,30 @@ function render(tables) {
               ? "Comisión"
               : `Comisión ${com.ID}`;
 
+            const commissionKey = `${CURRENT_YEAR}-${nivelId}-${com.ID}`;
+            const estaPlegada = collapsedCommissions.has(commissionKey);
+
             return `
-              <section class="commission">
+              <section class="commission ${estaPlegada ? "is-collapsed" : ""}" data-commission-key="${escapeHTML(commissionKey)}">
                 <div class="commission-header">
                   <div class="commission-meta">
                     <span class="commission-label">${escapeHTML(nombreComision)}</span>
                     <span class="aula">Taller ${escapeHTML(com.Taller)}</span>
                   </div>
-                  <div class="commission-name">
-                    ${escapeHTML(nombreEquipo)}
+
+                  <div class="commission-title-row">
+                    <div class="commission-name">
+                      ${escapeHTML(nombreEquipo)}
+                    </div>
+
+                    <button
+                      class="commission-toggle"
+                      type="button"
+                      aria-label="${estaPlegada ? "Desplegar comisión" : "Plegar comisión"}"
+                      aria-expanded="${estaPlegada ? "false" : "true"}"
+                    >
+                      <span>⌄</span>
+                    </button>
                   </div>
                 </div>
 
@@ -517,6 +533,30 @@ document.addEventListener("click", e => {
   if (e.target.matches(".lightbox-close") || e.target.matches(".lightbox-backdrop")) {
     cerrarLightbox();
   }
+});
+
+document.addEventListener("click", e => {
+  const toggle = e.target.closest(".commission-toggle");
+  if (!toggle) return;
+
+  const commission = toggle.closest(".commission");
+  if (!commission) return;
+
+  const key = commission.dataset.commissionKey;
+  const quedaPlegada = !commission.classList.contains("is-collapsed");
+
+  commission.classList.toggle("is-collapsed", quedaPlegada);
+
+  if (key) {
+    if (quedaPlegada) {
+      collapsedCommissions.add(key);
+    } else {
+      collapsedCommissions.delete(key);
+    }
+  }
+
+  toggle.setAttribute("aria-expanded", quedaPlegada ? "false" : "true");
+  toggle.setAttribute("aria-label", quedaPlegada ? "Desplegar comisión" : "Plegar comisión");
 });
 
 document.addEventListener("keydown", e => {
