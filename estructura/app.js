@@ -236,6 +236,29 @@ function nivelRoleGroup(adjuntos, responsables, docentes, nivelId) {
   `;
 }
 
+function yearsDisponibles(items) {
+  return [...new Set(
+    items
+      .map(item => Number(item.Año))
+      .filter(Boolean)
+  )].sort((a, b) => b - a);
+}
+
+function tomarUltimaVersionPorID(items, year) {
+  const targetYear = Number(year);
+  const resultado = {};
+
+  items
+    .filter(item => Number(item.Año) <= targetYear)
+    .sort((a, b) => Number(a.Año) - Number(b.Año))
+    .forEach(item => {
+      resultado[item.ID] = item;
+    });
+
+  return Object.values(resultado);
+}
+
+
 /* RENDER */
 
 function render(tables) {
@@ -246,8 +269,8 @@ function render(tables) {
 
   window.__docentes = docentes;
 
-  const niveles = (tables.niveles || []).filter(n => n.Año === CURRENT_YEAR);
-  const comisiones = (tables.comisiones || []).filter(c => c.Año === CURRENT_YEAR);
+  const niveles = tomarUltimaVersionPorID(tables.niveles || [], CURRENT_YEAR);
+  const comisiones = tomarUltimaVersionPorID(tables.comisiones || [], CURRENT_YEAR);
 
   const jefatura = niveles.find(n => n.ID === "todo");
   const nivelesReales = niveles.filter(n => n.ID !== "todo");
