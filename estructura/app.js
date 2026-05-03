@@ -374,7 +374,6 @@ function cargarSelectorDeAnios(anios) {
   CURRENT_YEAR = elegirAnioInicial(aniosOrdenados);
   $yearSelector.value = CURRENT_YEAR;
 
-  actualizarURLConAnio(CURRENT_YEAR, true);
 }
 
 /* =========================
