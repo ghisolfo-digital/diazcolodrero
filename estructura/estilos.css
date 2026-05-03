@@ -682,6 +682,16 @@ html {
   letter-spacing: .04em;
 }
 
+.info strong .inline-apodo {
+  margin-top: 0;
+  font-size: inherit;
+  font-style: italic;
+  font-weight: inherit;
+  color: inherit;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
 .error {
   color: #990000;
   font-weight: 700;
@@ -793,6 +803,7 @@ body.lightbox-open {
   margin: 8px 0 22px;
   font-size: 22px;
   font-weight: 800;
+  font-style: italic;
   color: #595957;
 }
 

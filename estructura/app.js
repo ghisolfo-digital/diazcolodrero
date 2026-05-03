@@ -189,6 +189,29 @@ function displayName(docente) {
   return `${nombre} ${apellido}`.trim() || capitalizar(apodo) || "Sin nombre";
 }
 
+function displayNameHTML(docente) {
+  const soloApodo = boolValue(docente["Sólo Apodo"]);
+  const apodo = docente.Apodo?.trim() || "";
+  const nombre = docente.Nombre?.trim() || "";
+  const apellido = docente.Apellido?.trim() || "";
+
+  if (soloApodo && apodo) {
+    return `
+      <em class="inline-apodo">${escapeHTML(capitalizar(apodo))}</em>${apellido ? ` ${escapeHTML(apellido)}` : ""}
+    `.trim();
+  }
+
+  if (nombre || apellido) {
+    return escapeHTML(`${nombre} ${apellido}`.trim());
+  }
+
+  if (apodo) {
+    return `<em class="inline-apodo">${escapeHTML(capitalizar(apodo))}</em>`;
+  }
+
+  return "Sin nombre";
+}
+
 function nombreReal(docente) {
   return `${docente.Nombre || ""} ${docente.Apellido || ""}`.trim();
 }
@@ -247,7 +270,7 @@ function docenteCard(id, docentes, rol = "", extraClass = "", meta = {}) {
     >
       <div class="avatar">${avatar}</div>
       <div class="info">
-        <strong>${escapeHTML(displayName(docente))}</strong>
+        <strong>${displayNameHTML(docente)}</strong>
         ${rol ? `<em>${escapeHTML(rol)}</em>` : ""}
       </div>
     </button>
@@ -297,7 +320,7 @@ function nivelRoleGroup(adjuntos, responsables, docentes, nivelId, ciclo) {
           >
             <div class="avatar">${avatar}</div>
             <div class="info">
-              <strong>${escapeHTML(displayName(docente))}</strong>
+              <strong>${displayNameHTML(docente)}</strong>
               <em>${escapeHTML(p.rol)}</em>
             </div>
           </button>
