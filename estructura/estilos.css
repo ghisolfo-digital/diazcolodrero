@@ -124,6 +124,7 @@ h1 {
   max-width: 570px;
   width: 100%;
   justify-self: center;
+  overflow: hidden;
 }
 
 .level-title {
@@ -138,17 +139,7 @@ h1 {
   margin: -14px -14px 0;
   padding: 14px 10px 10px;
   border-bottom: 1px solid #e2e2e2;
-  border-radius: 22px 22px 0 0;
-  overflow: visible;
-}
-
-.level-title::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: #595957;
-  border-radius: 22px 22px 0 0;
+  border-radius: 0;
 }
 
 .level-team {
