@@ -120,6 +120,7 @@ h1 {
   border: 1px solid #d8d8d8;
   border-radius: 22px;
   padding: 14px;
+  padding-top: 0;
   box-shadow: 0 8px 24px rgba(0,0,0,.055);
   max-width: 570px;
   width: 100%;
@@ -135,17 +136,19 @@ h1 {
   color: #fff;
   font-size: 24px;
   font-weight: 850;
-  margin: -14px -14px 0;
-  padding: 6px 10px 5px;
-  border-bottom: 0;
+  margin: 0 -14px 0;
+  padding: 8px 10px 7px;
+  border-bottom: 1px solid #e2e2e2;
   border-radius: 0;
 }
 
 .level-title::before {
   content: "";
-  display: block;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -14px;
   height: 14px;
-  margin: -6px -10px 6px;
   background: #595957;
   border-radius: 22px 22px 0 0;
   pointer-events: none;
@@ -153,11 +156,12 @@ h1 {
 
 .level-title::after {
   content: "";
-  display: block;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -8px;
   height: 8px;
-  margin: 5px -10px -5px;
   background: #595957;
-  border-bottom: 1px solid #e2e2e2;
   pointer-events: none;
 }
 
