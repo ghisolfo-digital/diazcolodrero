@@ -702,7 +702,8 @@ body.lightbox-open {
 
 @media (max-width: 1180px) {
   .levels {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(270px, min(570px, 100%));
+    justify-content: center;
   }
 }
 
