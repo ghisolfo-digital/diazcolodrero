@@ -217,11 +217,11 @@ function render(tables) {
             <section class="commission">
               <div class="commission-header">
                 <div class="commission-meta">
-                  <span class="commission-label">Comisión</span>
-                  <span class="aula">Aula ${escapeHTML(com.Aula)}</span>
+                  <span class="commission-label">Comisión ${escapeHTML(com.ID)}</span>
+                  <span class="aula">Taller ${escapeHTML(com.Aula)}</span>
                 </div>
                 <div class="commission-name">
-                  Comisión ${escapeHTML(com.ID)}
+                  ${escapeHTML(nombreComisionPorDocentes(splitIds(com.Docentes), docentes))}
                 </div>
               </div>
 
