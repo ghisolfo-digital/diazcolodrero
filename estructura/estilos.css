@@ -147,9 +147,6 @@ html {
   box-shadow: 0 6px 14px rgba(0,0,0,.16);
 }
 
-.level {
-  scroll-margin-top: 22px;
-}
 
 .levels {
   width: 100%;
@@ -161,6 +158,7 @@ html {
 }
 
 .level {
+  scroll-margin-top: 22px;
   background: white;
   border: 1px solid #d8d8d8;
   border-radius: 22px;
@@ -301,11 +299,12 @@ html {
   display: flex;
   flex-direction: column;
   gap: 5px;
-  margin-bottom: 12px;
-  padding: 0;
+  margin: -14px -14px 0;
+  padding: 14px;
   background: transparent;
-  border-bottom: 0;
+  border-bottom: 1px solid #d4d4cc;
   cursor: pointer;
+  transition: background .18s ease;
 }
 
 .commission-meta {
@@ -376,19 +375,28 @@ html {
   transition: transform .18s ease;
 }
 
+
+.commission-header:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+
 .commission-header:hover .commission-toggle {
   background: #ece810;
   border-color: #000;
   color: #000;
   box-shadow: 0 5px 12px rgba(0,0,0,.18);
 }
+
 .commission.is-collapsed {
   background: #f7f7f3;
   border-color: #deded6;
   box-shadow: none;
   border-radius: 18px 18px 0 0;
+  padding-bottom: 0;
   
 }
+
 
 .commission.is-collapsed .commission-label,
 .commission.is-collapsed .commission-name {
@@ -438,7 +446,7 @@ html {
   display: flex;
   flex-direction: column;
   gap: 0;
-  border-top: 1px solid #d4d4cc;
+  border-top: 0;
 }
 
 .commission-team .card {
@@ -463,7 +471,7 @@ html {
     flex-direction: row;
     flex-wrap: wrap;
     gap: 0;
-    border-top: 1px solid #d4d4cc;
+    border-top: 0;
   }
 
   .commission-team .card {
