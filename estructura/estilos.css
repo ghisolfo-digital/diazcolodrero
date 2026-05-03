@@ -777,8 +777,10 @@ body.lightbox-open {
 }
 
 .lightbox-meta {
-  display: grid;
-  gap: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
   font-size: 14px;
   color: #595957;
 }
@@ -788,18 +790,17 @@ body.lightbox-open {
 }
 
 #lightbox-nivel {
-  margin-bottom: 2px;
+  margin-bottom: 6px;
   font-size: 16px;
   font-weight: 750;
   color: #000;
 }
 
 #lightbox-taller {
-  justify-self: center;
   display: inline-block;
   width: auto;
   max-width: max-content;
-  margin-top: 4px;
+  margin-top: 2px;
   margin-bottom: 0;
   padding: 4px 10px;
   border-radius: 999px;
@@ -815,8 +816,8 @@ body.lightbox-open {
 }
 
 #lightbox-comision {
-  margin-top: 2px;
-  padding-top: 6px;
+  margin-top: 6px;
+  padding-top: 8px;
   border-top: 1px solid rgba(89,89,87,.18);
   font-size: 14px;
   font-weight: 500;
