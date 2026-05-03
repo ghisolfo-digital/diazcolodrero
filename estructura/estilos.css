@@ -106,12 +106,12 @@ h1 {
   position: sticky;
   top: 0;
   z-index: 20;
-  background: white;
+  background: #595957;
   text-align: center;
-  color: #595957;
+  color: #fff;
   font-size: 24px;
   font-weight: 850;
-  margin: -14px -14px 14px;
+  margin: -14px -14px 0;
   padding: 14px 10px 10px;
   border-bottom: 1px solid #e2e2e2;
   border-radius: 22px 22px 0 0;
@@ -120,7 +120,8 @@ h1 {
 .level-team {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 0;
+  margin: 0 -14px;
 }
 
 /* =========================
@@ -340,16 +341,17 @@ h1 {
 }
 
 .card.nivel-rol {
-  border: 1px solid #000;
+  border: 0;
+  border-radius: 0;
   background: #ece810;
 }
 
 .nivel-rol-grupo {
   flex-direction: row;
-  justify-content: space-evenly;
-  align-items: flex-start;
+  justify-content: stretch;
+  align-items: stretch;
   gap: 0;
-  padding-inline: 10px;
+  padding: 0;
   cursor: default;
 }
 
@@ -362,14 +364,16 @@ h1 {
 }
 
 .nivel-persona {
-  flex: 0 0 150px;
-  max-width: 150px;
+  flex: 1 1 0;
   min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: flex-start;
   gap: 7px;
+  padding: 12px 8px;
   border: 0;
+  border-radius: 0;
   background: transparent;
   box-shadow: none;
   font-family: inherit;
@@ -377,8 +381,13 @@ h1 {
   cursor: pointer;
 }
 
+.nivel-persona + .nivel-persona {
+  border-left: 1px solid #d4d4cc;
+}
+
 .nivel-persona:hover {
-  background: transparent;
+  background: rgba(255, 255, 255, 0.18);
+
 }
 
 .nivel-persona .info strong {
