@@ -59,11 +59,53 @@ function driveImageUrl(url) {
   return url;
 }
 
+/*
+  CSV esperado:
+  - Ciclo = año calendario: 2023, 2024, 2025, 2026...
+  - Nivel = todo, 1, 2, 3, 4...
+  - Comisión = A, B, C...
+*/
+
+function getCiclo(item) {
+  return String(item.Ciclo || item.Año || "").trim();
+}
+
+function getNivelId(item) {
+  return String(item.Nivel || item.ID || item.Año || "").trim();
+}
+
+function getComisionParte(item) {
+  return String(item.Comisión || item.Comision || item.Letra || item.Grupo || "").trim();
+}
+
+function getComisionId(item) {
+  const nivel = getNivelId(item);
+  const comision = getComisionParte(item);
+
+  if (nivel && comision) return `${nivel}${comision}`;
+  return String(item.ID || "").trim();
+}
+
+function getComisionLabel(item) {
+  const comision = getComisionParte(item);
+  return comision || getComisionId(item);
+}
+
 /* =========================
    CSV
 ========================= */
 
+function detectarSeparador(text) {
+  const primeraLinea = String(text || "").split(/\r?\n/).find(line => line.trim()) || "";
+
+  const tabs = (primeraLinea.match(/\t/g) || []).length;
+  const commas = (primeraLinea.match(/,/g) || []).length;
+
+  return tabs > commas ? "\t" : ",";
+}
+
 function parseCSV(text) {
+  const separator = detectarSeparador(text);
   const rows = [];
   let row = [];
   let cell = "";
@@ -78,7 +120,7 @@ function parseCSV(text) {
       i++;
     } else if (char === '"') {
       insideQuotes = !insideQuotes;
-    } else if (char === "," && !insideQuotes) {
+    } else if (char === separator && !insideQuotes) {
       row.push(cell);
       cell = "";
     } else if ((char === "\n" || char === "\r") && !insideQuotes) {
@@ -293,8 +335,8 @@ function actualizarURLConAnio(anio, reemplazar = false) {
 
 function obtenerAniosDisponibles(tables) {
   const anios = [
-    ...(tables.niveles || []).map(n => String(n.Año || "").trim()),
-    ...(tables.comisiones || []).map(c => String(c.Año || "").trim())
+    ...(tables.niveles || []).map(n => getCiclo(n)),
+    ...(tables.comisiones || []).map(c => getCiclo(c))
   ];
 
   return [...new Set(anios)]
@@ -339,6 +381,34 @@ function cargarSelectorDeAnios(anios) {
 }
 
 /* =========================
+   JEFATURA / FALLBACK
+========================= */
+
+function buscarJefatura(todosLosNiveles, anioActual) {
+  const aniosOrdenados = [...new Set(
+    (todosLosNiveles || [])
+      .map(n => getCiclo(n))
+      .filter(Boolean)
+  )].sort((a, b) => Number(b) - Number(a));
+
+  const aniosCandidatos = aniosOrdenados.filter(anio => {
+    if (Number.isNaN(Number(anioActual))) return anio === anioActual;
+    return Number(anio) <= Number(anioActual);
+  });
+
+  for (const anio of aniosCandidatos) {
+    const jefatura = (todosLosNiveles || []).find(n =>
+      getCiclo(n) === anio &&
+      getNivelId(n).toLowerCase() === "todo"
+    );
+
+    if (jefatura) return jefatura;
+  }
+
+  return null;
+}
+
+/* =========================
    STICKY LEVELS
 ========================= */
 
@@ -369,36 +439,39 @@ function render(tables) {
 
   window.__docentes = docentes;
 
-  const niveles = (tables.niveles || []).filter(n => String(n.Año).trim() === CURRENT_YEAR);
-  const comisiones = (tables.comisiones || []).filter(c => String(c.Año).trim() === CURRENT_YEAR);
+  const todosLosNiveles = tables.niveles || [];
+  const todasLasComisiones = tables.comisiones || [];
 
-  const jefatura = niveles.find(n => n.ID === "todo");
-  const nivelesReales = niveles.filter(n => n.ID !== "todo");
+  const nivelesDelAnio = todosLosNiveles.filter(n => getCiclo(n) === CURRENT_YEAR);
+  const comisionesDelAnio = todasLasComisiones.filter(c => getCiclo(c) === CURRENT_YEAR);
 
-let html = "";
+  const jefatura = buscarJefatura(todosLosNiveles, CURRENT_YEAR);
+  const nivelesReales = nivelesDelAnio.filter(n => getNivelId(n).toLowerCase() !== "todo");
 
-if (nivelesReales.length) {
-  html += `
-    <nav class="level-index" aria-label="Índice de niveles">
-      ${nivelesReales.map(nivel => {
-        const nivelId = String(nivel.ID || "").trim();
-        const nivelDomId = domId(nivelId);
+  let html = "";
 
-        return `
-          <button
-            class="level-index-link"
-            type="button"
-            data-level-target="nivel-${escapeHTML(nivelDomId)}"
-          >
-            Nivel ${escapeHTML(nivelId)}
-          </button>
-        `;
-      }).join("")}
-    </nav>
-  `;
-}
+  if (nivelesReales.length) {
+    html += `
+      <nav class="level-index" aria-label="Índice de niveles">
+        ${nivelesReales.map(nivel => {
+          const nivelId = getNivelId(nivel);
+          const nivelDomId = domId(nivelId);
 
-if (jefatura) {
+          return `
+            <button
+              class="level-index-link"
+              type="button"
+              data-level-target="nivel-${escapeHTML(nivelDomId)}"
+            >
+              Nivel ${escapeHTML(nivelId)}
+            </button>
+          `;
+        }).join("")}
+      </nav>
+    `;
+  }
+
+  if (jefatura) {
     html += `<section class="top-catedra">`;
 
     splitIds(jefatura["A cargo"]).forEach(id => {
@@ -419,21 +492,21 @@ if (jefatura) {
   html += `<section class="levels">`;
 
   nivelesReales.forEach(nivel => {
-    const nivelId = nivel.ID;
+    const nivelId = getNivelId(nivel);
     const responsables = splitIds(nivel["A cargo"]);
     const adjuntos = splitIds(nivel.Adjunto);
-    const coms = comisiones.filter(c => String(c.ID || "").startsWith(nivelId));
+    const coms = comisionesDelAnio.filter(c => getNivelId(c) === nivelId);
 
     const levelKey = `${CURRENT_YEAR}-${nivelId}`;
     const nivelPlegado = collapsedLevels.has(levelKey);
     const nivelDomId = domId(nivelId);
 
     html += `
-  <article
-    id="nivel-${escapeHTML(nivelDomId)}"
-    class="level ${nivelPlegado ? "is-level-collapsed" : ""}"
-    data-level-key="${escapeHTML(levelKey)}"
-  >
+      <article
+        id="nivel-${escapeHTML(nivelDomId)}"
+        class="level ${nivelPlegado ? "is-level-collapsed" : ""}"
+        data-level-key="${escapeHTML(levelKey)}"
+      >
         <div class="level-head-cap"></div>
 
         <div
@@ -468,11 +541,14 @@ if (jefatura) {
             const cabeza = String(com["A cargo"] || "").trim();
             const mostrarCabeza = boolValue(com["Mostrar a cargo"]);
 
+            const comisionId = getComisionId(com);
+            const comisionLabel = getComisionLabel(com);
+
             const nombreComision = coms.length === 1
               ? "Comisión"
-              : `Comisión ${com.ID}`;
+              : `Comisión ${comisionLabel}`;
 
-            const commissionKey = `${CURRENT_YEAR}-${nivelId}-${com.ID}`;
+            const commissionKey = `${CURRENT_YEAR}-${nivelId}-${comisionId}`;
             const estaPlegada = collapsedCommissions.has(commissionKey);
 
             return `
@@ -505,7 +581,7 @@ if (jefatura) {
 
                     return docenteCard(id, docentes, esCabeza ? "A cargo" : "", "", {
                       nivel: nivelId,
-                      comision: com.ID,
+                      comision: comisionId,
                       nombreComision,
                       taller: com.Taller,
                       equipo: nombreEquipo
@@ -583,15 +659,15 @@ function abrirLightbox(card) {
       : "";
   }
 
-  taller.textContent = card.dataset.taller
-    ? `Taller ${card.dataset.taller}`
-    : "";
-
   if (card.dataset.nombreComision) {
     comision.textContent = `${card.dataset.nombreComision} — ${card.dataset.equipo || ""}`;
   } else {
     comision.textContent = card.dataset.rol || "";
   }
+
+  taller.textContent = card.dataset.taller
+    ? `Taller ${card.dataset.taller}`
+    : "";
 
   equipo.textContent = "";
 
@@ -662,7 +738,6 @@ function toggleCommission(commission) {
 ========================= */
 
 document.addEventListener("click", e => {
-
   const indexButton = e.target.closest(".level-index-link");
   if (indexButton) {
     const targetId = indexButton.dataset.levelTarget;

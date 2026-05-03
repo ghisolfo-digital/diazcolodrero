@@ -211,10 +211,10 @@ html {
   place-items: center;
   appearance: none;
   -webkit-appearance: none;
-  border: 1px solid rgba(255,255,255,.48);
+  border: 1px solid #d0d0ca;
   border-radius: 50%;
-  background: transparent;
-  color: rgba(255,255,255,.72);
+  background: #d8d8d2;
+  color: #595957;
   font-family: inherit;
   font-size: 14px;
   line-height: 1;
@@ -236,9 +236,9 @@ html {
 }
 
 .level-title:hover .level-toggle {
-  background: rgba(255,255,255,.18);
-  border-color: #fff;
-  color: #fff;
+  background: #ece810;
+  border-color: #000;
+  color: #000;
   box-shadow: 0 5px 12px rgba(0,0,0,.22);
 }
 
