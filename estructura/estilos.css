@@ -430,6 +430,7 @@ html {
 
 .commission.is-collapsed .commission-header {
   margin-bottom: 0;
+  border-bottom: 0;
 }
 
 .aula {
