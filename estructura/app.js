@@ -66,16 +66,10 @@ function driveImageUrl(url) {
 
   const match = String(url).match(/\/d\/([^/]+)/);
   if (match) {
-    return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w400`;
+    return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w800`;
   }
 
   return url;
-}
-
-function initials(docente) {
-  const n = docente.nombre?.trim()?.[0] || "";
-  const a = docente.apellido?.trim()?.[0] || "";
-  return (n + a).toUpperCase();
 }
 
 function displayName(docente) {
@@ -89,6 +83,24 @@ function displayName(docente) {
   }
 
   return `${nombre} ${apellido}`.trim() || apodo || "Sin nombre";
+}
+
+function nombreReal(docente) {
+  return `${docente.nombre || ""} ${docente.apellido || ""}`.trim();
+}
+
+function nombreComisionPorDocentes(ids, docentes) {
+  return ids
+    .map(id => {
+      const d = docentes[id];
+      if (!d) return id;
+
+      const apodo = d.apodo?.trim();
+      const nombre = d.nombre?.trim();
+
+      return apodo || nombre || id;
+    })
+    .join(" + ");
 }
 
 function docenteCard(id, docentes, rol = "", extraClass = "", meta = {}) {
@@ -172,20 +184,6 @@ function comisionesDelNivel(nivelId, comisiones) {
   return comisiones.filter(c => String(c.ID || "").startsWith(nivelId));
 }
 
-function nombreComisionPorDocentes(ids, docentes) {
-  return ids
-    .map(id => {
-      const d = docentes[id];
-      if (!d) return id;
-
-      const apodo = d.apodo?.trim();
-      const nombre = d.nombre?.trim();
-
-      return apodo || nombre || id;
-    })
-    .join(" + ");
-}
-
 function nivelRoleGroup(adjuntos, responsables, docentes, nivelId) {
   const personas = [
     ...adjuntos.map(id => ({ id, rol: "Adjunto" })),
@@ -255,12 +253,12 @@ function render(tables) {
   let html = "";
 
   if (jefatura) {
-  splitIds(jefatura["A cargo"]).forEach(id => {
-    html += docenteCard(id, docentes, "Titular", "principal", {
-      nivel: "General"
+    splitIds(jefatura["A cargo"]).forEach(id => {
+      html += docenteCard(id, docentes, "Titular", "principal", {
+        nivel: "General"
+      });
     });
-  });
-}
+  }
 
   html += `<section class="levels">`;
 
@@ -279,28 +277,33 @@ function render(tables) {
         </div>
 
         <div class="commissions">
-          ${coms.map(com => `
-            <section class="commission">
-              <div class="commission-header">
-                <div class="commission-meta">
-                  <span class="commission-label">Comisión ${escapeHTML(com.ID)}</span>
-                  <span class="aula">Taller ${escapeHTML(com.Aula)}</span>
-                </div>
-                <div class="commission-name">
-                  ${escapeHTML(nombreComisionPorDocentes(splitIds(com.Docentes), docentes))}
-                </div>
-              </div>
+          ${coms.map(com => {
+            const idsDocentes = splitIds(com.Docentes);
+            const nombreEquipo = nombreComisionPorDocentes(idsDocentes, docentes);
 
-              <div class="commission-team">
-                ${splitIds(com.Docentes).map(id => docenteCard(id, docentes, "", "", {
-                  nivel: nivelId,
-                  comision: com.ID,
-                  taller: com.Aula,
-                  equipo: nombreComisionPorDocentes(splitIds(com.Docentes), docentes)
-                })).join("")}
-              </div>
-            </section>
-          `).join("")}
+            return `
+              <section class="commission">
+                <div class="commission-header">
+                  <div class="commission-meta">
+                    <span class="commission-label">Comisión ${escapeHTML(com.ID)}</span>
+                    <span class="aula">Taller ${escapeHTML(com.Aula)}</span>
+                  </div>
+                  <div class="commission-name">
+                    ${escapeHTML(nombreEquipo)}
+                  </div>
+                </div>
+
+                <div class="commission-team">
+                  ${idsDocentes.map(id => docenteCard(id, docentes, "", "", {
+                    nivel: nivelId,
+                    comision: com.ID,
+                    taller: com.Aula,
+                    equipo: nombreEquipo
+                  })).join("")}
+                </div>
+              </section>
+            `;
+          }).join("")}
         </div>
       </article>
     `;
@@ -309,23 +312,6 @@ function render(tables) {
   html += `</section>`;
 
   $root.innerHTML = html;
-}
-
-async function init() {
-  try {
-    const response = await fetch(CSV_URL);
-    const text = await response.text();
-    const rows = parseCSV(text);
-    const tables = procesarTablas(rows);
-    render(tables);
-  } catch (error) {
-    console.error(error);
-    $root.innerHTML = `<p class="error">No se pudo cargar el organigrama.</p>`;
-  }
-}
-
-function nombreReal(docente) {
-  return `${docente.nombre || ""} ${docente.apellido || ""}`.trim();
 }
 
 function abrirLightbox(card) {
@@ -338,9 +324,12 @@ function abrirLightbox(card) {
   const photo = document.querySelector("#lightbox-photo");
   const name = document.querySelector("#lightbox-name");
   const apodo = document.querySelector("#lightbox-apodo");
-  const comision = document.querySelector("#lightbox-comision");
   const nivel = document.querySelector("#lightbox-nivel");
+  const taller = document.querySelector("#lightbox-taller");
+  const comision = document.querySelector("#lightbox-comision");
   const equipo = document.querySelector("#lightbox-equipo");
+
+  if (!lightbox || !photo || !name || !apodo || !nivel || !taller || !comision || !equipo) return;
 
   const foto = driveImageUrl(docente.Foto);
 
@@ -351,13 +340,17 @@ function abrirLightbox(card) {
   name.textContent = nombreReal(docente);
   apodo.textContent = docente.apodo ? docente.apodo : "";
 
-  comision.textContent = card.dataset.comision
-    ? `Comisión ${card.dataset.comision} · Taller ${card.dataset.taller}`
-    : card.dataset.rol || "";
-
   nivel.textContent = card.dataset.nivel
     ? `Nivel ${card.dataset.nivel}`
     : "";
+
+  taller.textContent = card.dataset.taller
+    ? `Taller ${card.dataset.taller}`
+    : "";
+
+  comision.textContent = card.dataset.comision
+    ? `Comisión ${card.dataset.comision}`
+    : card.dataset.rol || "";
 
   equipo.textContent = card.dataset.equipo || "";
 
@@ -366,7 +359,10 @@ function abrirLightbox(card) {
 }
 
 function cerrarLightbox() {
-  document.querySelector("#lightbox").hidden = true;
+  const lightbox = document.querySelector("#lightbox");
+  if (!lightbox) return;
+
+  lightbox.hidden = true;
   document.body.classList.remove("lightbox-open");
 }
 
@@ -385,5 +381,18 @@ document.addEventListener("click", e => {
 document.addEventListener("keydown", e => {
   if (e.key === "Escape") cerrarLightbox();
 });
+
+async function init() {
+  try {
+    const response = await fetch(CSV_URL);
+    const text = await response.text();
+    const rows = parseCSV(text);
+    const tables = procesarTablas(rows);
+    render(tables);
+  } catch (error) {
+    console.error(error);
+    $root.innerHTML = `<p class="error">No se pudo cargar el organigrama.</p>`;
+  }
+}
 
 init();
