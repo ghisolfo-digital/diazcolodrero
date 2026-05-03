@@ -136,20 +136,28 @@ h1 {
   font-size: 24px;
   font-weight: 850;
   margin: -14px -14px 0;
-  padding: 14px 10px 10px;
-  border-bottom: 1px solid #e2e2e2;
+  padding: 6px 10px 5px;
+  border-bottom: 0;
   border-radius: 0;
 }
 
 .level-title::before {
   content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: -14px;
+  display: block;
   height: 14px;
+  margin: -6px -10px 6px;
   background: #595957;
   border-radius: 22px 22px 0 0;
+  pointer-events: none;
+}
+
+.level-title::after {
+  content: "";
+  display: block;
+  height: 8px;
+  margin: 5px -10px -5px;
+  background: #595957;
+  border-bottom: 1px solid #e2e2e2;
   pointer-events: none;
 }
 
