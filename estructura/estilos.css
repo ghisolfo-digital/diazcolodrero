@@ -365,6 +365,16 @@ html {
   padding-right: 18px;
 }
 
+.tree.hide-photos .commission-team .card {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.tree.hide-photos .top-catedra .card.principal {
+  padding-top: 14px;
+  padding-bottom: 14px;
+}
+
 /* =========================
    COMISIONES
 ========================= */
