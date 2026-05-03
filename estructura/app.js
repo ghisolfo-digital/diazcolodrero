@@ -6,6 +6,7 @@ const $yearSelector = document.querySelector("#year-selector");
 let CURRENT_YEAR = String(new Date().getFullYear());
 const collapsedCommissions = new Set();
 const collapsedLevels = new Set();
+let showPhotos = true;
 
 /* =========================
    HELPERS
@@ -469,8 +470,9 @@ function render(tables) {
 
   let html = "";
 
-  if (nivelesReales.length) {
-    html += `
+if (nivelesReales.length) {
+  html += `
+    <div class="top-controls">
       <nav class="level-index" aria-label="Índice de niveles">
         ${nivelesReales.map(nivel => {
           const nivelId = getNivelId(nivel);
@@ -487,8 +489,23 @@ function render(tables) {
           `;
         }).join("")}
       </nav>
-    `;
-  }
+
+      <div class="photos-control">
+        <span>Ver fotos</span>
+
+        <button
+          class="photos-toggle ${showPhotos ? "is-on" : ""}"
+          type="button"
+          role="switch"
+          aria-checked="${showPhotos ? "true" : "false"}"
+          aria-label="${showPhotos ? "Ocultar fotos" : "Mostrar fotos"}"
+        >
+          <span></span>
+        </button>
+      </div>
+    </div>
+  `;
+}
 
   if (jefatura) {
     html += `<section class="top-catedra">`;
@@ -621,6 +638,7 @@ function render(tables) {
   html += `</section>`;
 
   $root.innerHTML = html;
+  aplicarEstadoFotos();
   actualizarStickyLevels();
 }
 
@@ -763,11 +781,31 @@ function resetCollapses() {
   collapsedLevels.clear();
 }
 
+function aplicarEstadoFotos() {
+  if ($root) {
+    $root.classList.toggle("hide-photos", !showPhotos);
+  }
+
+  document.querySelectorAll(".photos-toggle").forEach(toggle => {
+    toggle.classList.toggle("is-on", showPhotos);
+    toggle.setAttribute("aria-checked", showPhotos ? "true" : "false");
+    toggle.setAttribute("aria-label", showPhotos ? "Ocultar fotos" : "Mostrar fotos");
+  });
+}
+
 /* =========================
    EVENTS
 ========================= */
 
 document.addEventListener("click", e => {
+
+const photosToggle = e.target.closest(".photos-toggle");
+if (photosToggle) {
+  showPhotos = !showPhotos;
+  aplicarEstadoFotos();
+  return;
+}
+
   const indexButton = e.target.closest(".level-index-link");
   if (indexButton) {
     const targetId = indexButton.dataset.levelTarget;

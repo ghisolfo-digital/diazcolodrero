@@ -111,14 +111,24 @@ html {
   scroll-behavior: smooth;
 }
 
-.level-index {
+.top-controls {
   width: 100%;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin: -4px 0 0;
+}
+
+.level-index {
+  width: auto;
+  display: flex;
+  justify-content: flex-start;
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
-  margin: -4px 0 0;
+  margin: 0;
 }
 
 .level-index-link {
@@ -268,6 +278,63 @@ html {
 
 .level.is-level-collapsed .level-team,
 .level.is-level-collapsed .commissions {
+  display: none;
+}
+
+
+
+
+.photos-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+  color: #595957;
+  font-size: 14px;
+  font-weight: 750;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.photos-toggle {
+  width: 46px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  padding: 2px;
+  border: 1px solid #d0d0ca;
+  border-radius: 999px;
+  background: #d8d8d2;
+  cursor: pointer;
+  transition: background .14s ease, border-color .14s ease, box-shadow .14s ease;
+}
+
+.photos-toggle span {
+  width: 18px;
+  height: 18px;
+  display: block;
+  border-radius: 50%;
+  background: #595957;
+  transform: translateX(0);
+  transition: transform .14s ease, background .14s ease;
+}
+
+.photos-toggle.is-on {
+  background: #ece810;
+  border-color: #595957;
+}
+
+.photos-toggle.is-on span {
+  background: #000;
+  transform: translateX(22px);
+}
+
+.photos-toggle:hover {
+  border-color: #000;
+  box-shadow: 0 5px 12px rgba(0,0,0,.16);
+}
+
+.tree.hide-photos .avatar {
   display: none;
 }
 
@@ -964,4 +1031,17 @@ body.lightbox-open {
     max-width: 300px;
     flex: 0 1 300px;
   }
+
+  .top-controls {
+    justify-content: center;
+  }
+
+  .level-index {
+    justify-content: center;
+  }
+
+  .photos-control {
+    margin-left: 0;
+  }
+
 }
