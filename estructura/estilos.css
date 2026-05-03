@@ -338,9 +338,6 @@ html {
   display: none;
 }
 
-.tree.hide-photos .avatar {
-  display: none;
-}
 
 .tree.hide-photos .card,
 .tree.hide-photos .nivel-persona {
@@ -353,8 +350,19 @@ html {
   text-align: left;
 }
 
-.tree.hide-photos .info strong {
+.tree.hide-photos .commission-team .info strong {
   font-weight: 400;
+}
+
+.tree.hide-photos .level-team .info strong,
+.tree.hide-photos .top-catedra .info strong {
+  font-weight: 750;
+}
+
+.tree.hide-photos .top-catedra .card.principal,
+.tree.hide-photos .level-team .nivel-persona {
+  padding-left: 18px;
+  padding-right: 18px;
 }
 
 /* =========================
