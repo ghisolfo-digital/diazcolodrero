@@ -29,15 +29,15 @@ h1 {
   position: fixed;
   right: 20px;
   bottom: 20px;
-  width: 44px;
-  height: 44px;
+  width: 58px;
+  height: 58px;
+  font-size: 26px;
+  box-shadow: 0 10px 28px rgba(0,0,0,.42);
   border-radius: 50%;
   border: 1px solid #000;
   background: #ece810;
   color: #000;
-  font-size: 18px;
   cursor: pointer;
-  box-shadow: 0 6px 16px rgba(0,0,0,.25);
   opacity: 0;
   pointer-events: none;
   transition: opacity .2s ease;
@@ -52,17 +52,20 @@ h1 {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 24px;
   margin-bottom: 28px;
-  gap: 16px;
 }
 
 .year-selector {
   font-family: inherit;
-  font-size: 16px;
-  padding: 8px 12px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-  background: #fff;
+  font-size: clamp(28px, 4vw, 46px);
+  font-weight: 850;
+  line-height: 1;
+  color: #595957;
+  background: #ece810;
+  border: 1px solid #000;
+  border-radius: 18px;
+  padding: 8px 18px;
   cursor: pointer;
 }
 
@@ -579,4 +582,22 @@ body.lightbox-open {
   #lightbox-apodo {
     font-size: 19px;
   }
+
+  .top-bar {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 14px;
+  }
+
+  h1 {
+    text-align: center;
+    width: 100%;
+  }
+
+  .year-selector {
+    width: auto;
+    font-size: 34px;
+  }
+
 }

@@ -91,7 +91,10 @@ function procesarTablas(rows) {
 
     if (type === "títulos") {
       headers[section] = row.slice(2).map(h => h.trim());
-      tables[section] = [];
+
+      if (!tables[section]) {
+        tables[section] = [];
+      }
     }
 
     if (type === "data" && headers[section]) {
