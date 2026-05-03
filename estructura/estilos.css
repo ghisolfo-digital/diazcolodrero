@@ -724,15 +724,23 @@ body.lightbox-open {
   z-index: 3;
   top: 8px;
   right: 10px;
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   border: 0;
   border-radius: 50%;
-  background: rgba(244,244,241,.9);
+  background: #d8d8d2;
   font-size: 34px;
   line-height: 1;
   cursor: pointer;
   color: #000;
+  box-shadow: none;
+  transition: background .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+
+.lightbox-close:hover {
+  background: #ece810;
+  box-shadow: 0 8px 18px rgba(0,0,0,.24);
+  transform: translateY(-1px);
 }
 
 .lightbox-photo {
@@ -786,13 +794,14 @@ body.lightbox-open {
   display: inline-block;
   width: auto;
   max-width: max-content;
-  margin-top: 0;
-  margin-bottom: 4px;
+  margin-top: 8px;
+  margin-bottom: 0;
   padding: 4px 10px;
   border-radius: 999px;
   background: #fff;
   border: 0;
   font-size: 14px;
+  font-weight: 750;
   color: #595957;
 }
 

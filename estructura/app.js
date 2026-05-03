@@ -543,6 +543,21 @@ function renderConTransicion(tables) {
    LIGHTBOX
 ========================= */
 
+function ordenarMetaLightbox() {
+  const meta = document.querySelector(".lightbox-meta");
+  const nivel = document.querySelector("#lightbox-nivel");
+  const comision = document.querySelector("#lightbox-comision");
+  const taller = document.querySelector("#lightbox-taller");
+  const equipo = document.querySelector("#lightbox-equipo");
+
+  if (!meta || !nivel || !comision || !taller || !equipo) return;
+
+  meta.appendChild(nivel);
+  meta.appendChild(comision);
+  meta.appendChild(taller);
+  meta.appendChild(equipo);
+}
+
 function abrirLightbox(card) {
   const id = card.dataset.docenteId;
   const docente = window.__docentes?.[id];
