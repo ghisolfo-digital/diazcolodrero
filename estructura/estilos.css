@@ -109,7 +109,7 @@ h1 {
 .levels {
   width: 100%;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(270px, min(570px, 100%)));
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
   gap: 22px;
   align-items: start;
   justify-content: center;
@@ -123,6 +123,7 @@ h1 {
   box-shadow: 0 8px 24px rgba(0,0,0,.055);
   max-width: 570px;
   width: 100%;
+  justify-self: center;
 }
 
 .level-title {
@@ -699,13 +700,6 @@ body.lightbox-open {
 /* =========================
    RESPONSIVE
 ========================= */
-
-@media (max-width: 1180px) {
-  .levels {
-    grid-template-columns: minmax(270px, min(570px, 100%));
-    justify-content: center;
-  }
-}
 
 @media (max-width: 620px) {
   .page {
