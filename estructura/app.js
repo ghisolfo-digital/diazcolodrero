@@ -174,6 +174,48 @@ function nombreComisionPorDocentes(ids, docentes) {
     .join(" + ");
 }
 
+function nivelRoleGroup(adjuntos, responsables, docentes) {
+  const personas = [
+    ...adjuntos.map(id => ({ id, rol: "Adjunto" })),
+    ...responsables.map(id => ({ id, rol: "Resp. nivel" }))
+  ];
+
+  if (!personas.length) return "";
+
+  return `
+    <div class="card nivel-rol nivel-rol-grupo">
+      ${personas.map(p => {
+        const docente = docentes[p.id];
+
+        if (!docente) {
+          return `
+            <div class="nivel-persona missing-inline">
+              ID no encontrado<br>
+              <strong>${escapeHTML(p.id)}</strong>
+            </div>
+          `;
+        }
+
+        const foto = driveImageUrl(docente.Foto);
+
+        const avatar = foto
+          ? `<img src="${escapeHTML(foto)}" alt="${escapeHTML(displayName(docente))}">`
+          : `<div class="avatar-fallback" aria-label="Sin foto"></div>`;
+
+        return `
+          <div class="nivel-persona">
+            <div class="avatar">${avatar}</div>
+            <div class="info">
+              <strong>${escapeHTML(displayName(docente))}</strong>
+              <em>${escapeHTML(p.rol)}</em>
+            </div>
+          </div>
+        `;
+      }).join("")}
+    </div>
+  `;
+}
+
 function render(tables) {
   const niveles = tables.niveles || [];
   const comisiones = tables.comisiones || [];
@@ -208,8 +250,7 @@ function render(tables) {
         <div class="level-title">Nivel ${escapeHTML(nivelId)}</div>
 
         <div class="level-team">
-          ${adjuntos.map(id => docenteCard(id, docentes, "Adjunto")).join("")}
-          ${responsables.map(id => docenteCard(id, docentes, "Resp. nivel")).join("")}
+          ${nivelRoleGroup(adjuntos, responsables, docentes)}
         </div>
 
         <div class="commissions">
