@@ -116,10 +116,6 @@ function docenteCard(id, docentes, rol = "", extraClass = "", meta = {}) {
   }
 
   const foto = driveImageUrl(docente.Foto);
-lightbox.querySelector(".lightbox-card").classList.toggle(
-  "lightbox-nivel-rol",
-  card.dataset.rol === "Resp. nivel" || card.dataset.rol === "Adjunto"
-);
 
   const destacar = boolValue(docente.MostrarCabeza);
   const rolFinal = rol || (destacar ? "A cargo" : "");
@@ -337,6 +333,11 @@ function abrirLightbox(card) {
   if (!lightbox || !photo || !name || !apodo || !nivel || !taller || !comision || !equipo) return;
 
   const foto = driveImageUrl(docente.Foto);
+
+  lightbox.querySelector(".lightbox-card").classList.toggle(
+    "lightbox-nivel-rol",
+    card.dataset.rol === "Resp. nivel" || card.dataset.rol === "Adjunto"
+  );
 
   photo.innerHTML = foto
     ? `<img src="${escapeHTML(foto)}" alt="${escapeHTML(nombreReal(docente))}">`

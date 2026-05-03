@@ -453,7 +453,7 @@ body.lightbox-open {
 
 @media (max-width: 1180px) {
   .levels {
-    grid-template-columns: repeat(2, minmax(270px, 1fr));
+    grid-template-columns: 1fr;
   }
 }
 
