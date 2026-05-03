@@ -385,9 +385,13 @@ if (nivelesReales.length) {
         const nivelDomId = domId(nivelId);
 
         return `
-          <a href="#nivel-${escapeHTML(nivelDomId)}">
+          <button
+            class="level-index-link"
+            type="button"
+            data-level-target="nivel-${escapeHTML(nivelDomId)}"
+          >
             Nivel ${escapeHTML(nivelId)}
-          </a>
+          </button>
         `;
       }).join("")}
     </nav>
@@ -654,6 +658,22 @@ function toggleCommission(commission) {
 ========================= */
 
 document.addEventListener("click", e => {
+
+  const indexButton = e.target.closest(".level-index-link");
+  if (indexButton) {
+    const targetId = indexButton.dataset.levelTarget;
+    const target = targetId ? document.getElementById(targetId) : null;
+
+    if (target) {
+      target.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    }
+
+    return;
+  }
+
   const title = e.target.closest(".level-title");
   if (title) {
     const level = title.closest(".level");
