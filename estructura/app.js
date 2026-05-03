@@ -269,8 +269,8 @@ function render(tables) {
 
   window.__docentes = docentes;
 
-  const niveles = tomarUltimaVersionPorID(tables.niveles || [], CURRENT_YEAR);
-  const comisiones = tomarUltimaVersionPorID(tables.comisiones || [], CURRENT_YEAR);
+  const niveles = (tables.niveles || []).filter(n => n.Año === CURRENT_YEAR);
+  const comisiones = (tables.comisiones || []).filter(c => c.Año === CURRENT_YEAR);
 
   const jefatura = niveles.find(n => n.ID === "todo");
   const nivelesReales = niveles.filter(n => n.ID !== "todo");
@@ -466,16 +466,41 @@ async function init() {
     const rows = parseCSV(text);
     const tables = procesarTablas(rows);
 
-    render(tables);
+const anios = obtenerAniosDisponibles(tables);
+cargarSelectorDeAnios(anios);
 
-    $yearSelector?.addEventListener("change", e => {
-      CURRENT_YEAR = e.target.value;
-      renderConTransicion(tables);
-    });
+render(tables);
+
+$yearSelector?.addEventListener("change", e => {
+  CURRENT_YEAR = e.target.value;
+  renderConTransicion(tables);
+});
   } catch (error) {
     console.error(error);
     $root.innerHTML = `<p class="error">No se pudo cargar el organigrama.</p>`;
   }
+}
+
+function obtenerAniosDisponibles(tables) {
+  const anios = [
+    ...(tables.niveles || []).map(n => String(n.Año || "").trim()),
+    ...(tables.comisiones || []).map(c => String(c.Año || "").trim())
+  ];
+
+  return [...new Set(anios)]
+    .filter(Boolean)
+    .sort((a, b) => Number(b) - Number(a));
+}
+
+function cargarSelectorDeAnios(anios) {
+  if (!$yearSelector) return;
+
+  $yearSelector.innerHTML = anios
+    .map(anio => `<option value="${escapeHTML(anio)}">${escapeHTML(anio)}</option>`)
+    .join("");
+
+  CURRENT_YEAR = anios[0] || "2026";
+  $yearSelector.value = CURRENT_YEAR;
 }
 
 init();
