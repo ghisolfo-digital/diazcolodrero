@@ -101,7 +101,6 @@ function docenteCard(id, docentes, rol = "", extraClass = "") {
   }
 
   const foto = driveImageUrl(docente.Foto);
-  const apodo = docente.apodo?.trim() || "";
   const destacar = boolValue(docente.MostrarCabeza);
 
   const classes = [
@@ -120,7 +119,6 @@ function docenteCard(id, docentes, rol = "", extraClass = "") {
       <div class="avatar">${avatar}</div>
       <div class="info">
         <strong>${escapeHTML(displayName(docente))}</strong>
-        ${apodo && !boolValue(docente["SóloApodo"]) ? `<span>${escapeHTML(apodo)}</span>` : ""}
         ${rol ? `<em>${escapeHTML(rol)}</em>` : ""}
       </div>
     </div>
