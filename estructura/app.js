@@ -112,7 +112,7 @@ function docenteCard(id, docentes, rol = "", extraClass = "") {
 
   const avatar = foto
     ? `<img src="${escapeHTML(foto)}" alt="${escapeHTML(displayName(docente))}">`
-    : `<div class="avatar-fallback">${escapeHTML(initials(docente))}</div>`;
+    : `<div class="avatar-fallback" aria-label="Sin foto"></div>`;
 
   return `
     <div class="${classes}">
@@ -215,8 +215,13 @@ function render(tables) {
           ${coms.map(com => `
             <section class="commission">
               <div class="commission-header">
-                <span>Comisión ${escapeHTML(nombreComisionPorDocentes(splitIds(com.Docentes), docentes))}</span>
-                <span class="aula">Aula ${escapeHTML(com.Aula)}</span>
+                <div class="commission-meta">
+                  <span class="commission-label">Comisión</span>
+                  <span class="aula">Aula ${escapeHTML(com.Aula)}</span>
+                </div>
+                <div class="commission-name">
+                  ${escapeHTML(nombreComisionPorDocentes(splitIds(com.Docentes), docentes))}
+                </div>
               </div>
 
               <div class="commission-team">

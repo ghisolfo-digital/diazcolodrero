@@ -29,6 +29,10 @@ h1 {
   gap: 28px;
 }
 
+/* =========================
+   NIVELES
+========================= */
+
 .levels {
   width: 100%;
   display: grid;
@@ -61,38 +65,67 @@ h1 {
   gap: 10px;
 }
 
+/* =========================
+   COMISIONES
+========================= */
+
 .commissions {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  margin-top: 16px;
+  gap: 26px; /* más separación */
+  margin-top: 22px;
 }
 
 .commission {
-  border: 1px solid #e1e1e1;
-  border-radius: 18px;
-  padding: 12px;
-  background: #fafafa;
+  border: 1px solid #d2d2d2;
+  border-radius: 20px;
+  padding: 14px;
+  background: #f0f0ea; /* más visible */
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.7);
 }
 
 .commission-header {
   display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.commission-meta {
+  display: flex;
   justify-content: space-between;
-  gap: 12px;
   align-items: center;
-  margin-bottom: 10px;
+  gap: 12px;
+}
+
+.commission-label {
+  font-size: 12px;
+  font-weight: 400;
+  color: #777;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.commission-name {
+  font-size: 18px;
+  line-height: 1.1;
   font-weight: 800;
+  color: #222;
 }
 
 .aula {
   font-size: 13px;
   font-weight: 700;
-  color: #666;
-  background: #eee;
+  color: #555;
+  background: #fff;
   border-radius: 999px;
   padding: 4px 8px;
   white-space: nowrap;
 }
+
+/* =========================
+   CARDS
+========================= */
 
 .card {
   display: flex;
@@ -112,11 +145,19 @@ h1 {
   box-shadow: 0 10px 28px rgba(0,0,0,.08);
 }
 
+/* cabeza de comisión (solo fondo si TRUE) */
 .card.cabeza-visible {
-  border: 2px solid #222;
+  border: 1px solid #e2e2e2;
   background: #fff7c7;
 }
 
+/* roles de nivel (adjunto + resp) */
+.card.nivel-rol {
+  border: 2px solid #000;
+  background: #f4d35e;
+}
+
+/* errores */
 .card.missing {
   color: #990000;
   background: #ffe2e2;
@@ -125,6 +166,10 @@ h1 {
   text-align: center;
   font-size: 13px;
 }
+
+/* =========================
+   AVATAR
+========================= */
 
 .avatar {
   width: 120px;
@@ -142,15 +187,20 @@ h1 {
   display: block;
 }
 
+/* silueta en SVG */
 .avatar-fallback {
   width: 100%;
   height: 100%;
-  display: grid;
-  place-items: center;
-  font-weight: 800;
-  color: #555;
-  font-size: 30px;
+  background-color: #d7d7d7;
+  background-image: url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='60' cy='44' r='22' fill='%23888888'/%3E%3Cpath d='M24 104c4-24 20-38 36-38s32 14 36 38' fill='%23888888'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 76%;
 }
+
+/* =========================
+   TEXTO
+========================= */
 
 .info {
   min-width: 0;
@@ -162,12 +212,6 @@ h1 {
 
 .info strong {
   font-size: 15px;
-}
-
-.info span {
-  margin-top: 3px;
-  font-size: 13px;
-  color: #666;
 }
 
 .info em {
@@ -184,6 +228,10 @@ h1 {
   color: #990000;
   font-weight: 700;
 }
+
+/* =========================
+   RESPONSIVE
+========================= */
 
 @media (max-width: 1100px) {
   .levels {
