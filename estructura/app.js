@@ -116,6 +116,11 @@ function docenteCard(id, docentes, rol = "", extraClass = "", meta = {}) {
   }
 
   const foto = driveImageUrl(docente.Foto);
+lightbox.querySelector(".lightbox-card").classList.toggle(
+  "lightbox-nivel-rol",
+  card.dataset.rol === "Resp. nivel" || card.dataset.rol === "Adjunto"
+);
+
   const destacar = boolValue(docente.MostrarCabeza);
   const rolFinal = rol || (destacar ? "A cargo" : "");
 
@@ -348,12 +353,14 @@ function abrirLightbox(card) {
     ? `Taller ${card.dataset.taller}`
     : "";
 
-  comision.textContent = card.dataset.comision
-    ? `Comisión ${card.dataset.comision}`
-    : card.dataset.rol || "";
-
-  equipo.textContent = card.dataset.equipo || "";
-
+if (card.dataset.comision) {
+  comision.textContent = `Comisión ${card.dataset.comision} — ${card.dataset.equipo || ""}`;
+  equipo.textContent = "";
+} else {
+  comision.textContent = card.dataset.rol || "";
+  equipo.textContent = "";
+}
+  
   lightbox.hidden = false;
   document.body.classList.add("lightbox-open");
 }

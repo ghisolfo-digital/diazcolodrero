@@ -166,7 +166,7 @@ h1 {
   height: 96px;
 }
 
-/* CARDS GENERALES */
+/* CARDS */
 
 .card {
   display: flex;
@@ -253,6 +253,7 @@ h1 {
   overflow: hidden;
   background: #ddd;
   flex: 0 0 auto;
+  transition: box-shadow .2s ease, transform .2s ease;
 }
 
 .card.principal .avatar {
@@ -271,13 +272,19 @@ h1 {
   object-fit: cover;
   display: block;
   filter: grayscale(100%);
-  transition: filter .2s ease, box-shadow .2s ease, transform .2s ease;
+  transition: filter .2s ease, transform .2s ease;
 }
 
-.card:hover .avatar img,
+/* hover foto: separado para que en resp/adjunto no active las dos */
+.card:not(.nivel-rol-grupo):hover .avatar,
+.nivel-persona:hover .avatar {
+  box-shadow: 0 0 0 3px rgba(0,0,0,.18), 0 10px 28px rgba(0,0,0,.45);
+  transform: scale(1.02);
+}
+
+.card:not(.nivel-rol-grupo):hover .avatar img,
 .nivel-persona:hover .avatar img {
   filter: grayscale(0%);
-  box-shadow: 0 8px 22px rgba(0,0,0,.45);
   transform: scale(1.02);
 }
 
@@ -356,6 +363,11 @@ body.lightbox-open {
   box-shadow: 0 18px 60px rgba(0,0,0,.35);
 }
 
+.lightbox-card.lightbox-nivel-rol {
+  background: #ece810;
+  border: 1px solid #000;
+}
+
 .lightbox-close {
   position: absolute;
   top: 10px;
@@ -387,7 +399,7 @@ body.lightbox-open {
 #lightbox-name {
   margin: 0;
   font-size: 34px;
-  color: #595957;
+  color: #000;
   line-height: 1.05;
 }
 
@@ -395,7 +407,7 @@ body.lightbox-open {
   margin: 8px 0 22px;
   font-size: 22px;
   font-weight: 800;
-  color: #000;
+  color: #595957;
 }
 
 .lightbox-meta {
@@ -412,24 +424,27 @@ body.lightbox-open {
 #lightbox-nivel {
   font-weight: 800;
   color: #000;
-  font-size: 16px;
+  font-size: 18px;
 }
 
 #lightbox-taller {
   color: #595957;
   font-weight: 500;
+  font-size: 18px;
 }
 
 #lightbox-comision {
   margin-top: 10px;
-  padding-top: 14px;
-  border-top: 1px solid #999;
-  font-weight: 700;
-  color: #000;
+  padding-top: 0;
+  border-top: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #595957;
 }
 
 #lightbox-equipo {
-  font-size: 15px;
+  display: inline;
+  font-size: 14px;
   line-height: 1.25;
   color: #595957;
 }
