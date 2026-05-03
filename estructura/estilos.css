@@ -512,3 +512,12 @@ body.lightbox-open {
     padding-inline: 12px;
   }
 }
+
+.tree {
+  transition: opacity .22s ease, transform .22s ease;
+}
+
+.tree.is-changing {
+  opacity: 0;
+  transform: translateY(8px);
+}
