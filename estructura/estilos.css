@@ -89,16 +89,13 @@ h1 {
 }
 
 .commission-header {
-  position: sticky;
-  top: 57px;
-  z-index: 10;
   display: flex;
   flex-direction: column;
   gap: 5px;
-  margin: -14px -14px 12px;
-  padding: 12px 14px 10px;
-  background: #ecece5;
-  border-bottom: 1px solid #d4d4cc;
+  margin-bottom: 12px;
+  padding: 0;
+  background: transparent;
+  border-bottom: 0;
 }
 
 .commission-meta {
@@ -175,6 +172,8 @@ h1 {
 .card.principal {
   width: min(300px, 100%);
   justify-content: center;
+  background: #ece810;
+  border: 1px solid #000;
   box-shadow: 0 10px 28px rgba(0,0,0,.08);
 }
 
@@ -249,6 +248,7 @@ h1 {
   height: 100%;
   object-fit: cover;
   display: block;
+  filter: grayscale(100%);
 }
 
 /* silueta */
