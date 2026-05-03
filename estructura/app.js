@@ -1,4 +1,4 @@
-const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQZYeQoQBd_4Kzz8E2FxrAqISWC8mYanr1Cw0HIw6r1ZwRUUtiQgUyU-bteg11Pmf3KQk-xjgDUzS-b/pub?gid=0&single=true&output=csv";
+const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQZYeQoQBd_4Kzz8E2FxrAqISWC8mYanr1Cw0HIw6r1ZwRUUtiQgUyU-bteg11Pmf3Kqk-xjgDUzS-b/pub?gid=0&single=true&output=csv";
 
 const $root = document.querySelector("#organigrama");
 const $yearSelector = document.querySelector("#year-selector");
@@ -826,11 +826,26 @@ if (backToTop) {
 async function init() {
   try {
     const response = await fetch(CSV_URL);
+
+    if (!response.ok) {
+      throw new Error(`Error HTTP ${response.status}`);
+    }
+
     const text = await response.text();
+
+    if (!text || !text.includes("docentes") || !text.includes("niveles")) {
+      throw new Error("El CSV no parece tener la estructura esperada.");
+    }
+
     const rows = parseCSV(text);
     const tables = procesarTablas(rows);
 
     const anios = obtenerAniosDisponibles(tables);
+
+    if (!anios.length) {
+      throw new Error("No se encontraron ciclos/años disponibles en el CSV.");
+    }
+
     cargarSelectorDeAnios(anios);
 
     render(tables);
@@ -859,7 +874,19 @@ async function init() {
     });
   } catch (error) {
     console.error(error);
-    $root.innerHTML = `<p class="error">No se pudo cargar el organigrama.</p>`;
+
+    if ($root) {
+      $root.innerHTML = `
+        <p class="error">
+          No se pudo cargar el organigrama.
+        </p>
+      `;
+    }
+
+    if ($yearSelector) {
+      $yearSelector.innerHTML = "";
+      $yearSelector.disabled = true;
+    }
   }
 }
 
