@@ -131,10 +131,12 @@ html {
   border-radius: 999px;
   background: #fff;
   color: #595957;
+  font-family: inherit;
   font-size: 14px;
   font-weight: 750;
   line-height: 1;
   text-decoration: none;
+  cursor: pointer;
   transition: background .18s ease, border-color .18s ease, color .18s ease;
 }
 
@@ -144,8 +146,14 @@ html {
   color: #000;
 }
 
+.level-index-link:hover {
+  background: #ece810;
+  border-color: #000;
+  color: #000;
+}
+
 .level {
-  scroll-margin-top: 16px;
+  scroll-margin-top: 56px;
 }
 
 .levels {

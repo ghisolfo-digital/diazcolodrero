@@ -429,7 +429,11 @@ if (jefatura) {
     const nivelDomId = domId(nivelId);
 
     html += `
-      <article class="level ${nivelPlegado ? "is-level-collapsed" : ""}" data-level-key="${escapeHTML(levelKey)}">
+  <article
+    id="nivel-${escapeHTML(nivelDomId)}"
+    class="level ${nivelPlegado ? "is-level-collapsed" : ""}"
+    data-level-key="${escapeHTML(levelKey)}"
+  >
         <div class="level-head-cap"></div>
 
         <div
