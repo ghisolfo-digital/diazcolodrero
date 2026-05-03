@@ -346,9 +346,13 @@ function abrirLightbox(card) {
   name.textContent = nombreReal(docente);
   apodo.textContent = docente.apodo ? docente.apodo : "";
 
-  nivel.textContent = card.dataset.nivel
-    ? `Nivel ${card.dataset.nivel}`
-    : "";
+  if (card.dataset.nivel === "General") {
+    nivel.textContent = "Titular de cátedra";
+  } else {
+    nivel.textContent = card.dataset.nivel
+      ? `Nivel ${card.dataset.nivel}`
+      : "";
+  }
 
   taller.textContent = card.dataset.taller
     ? `Taller ${card.dataset.taller}`
@@ -402,5 +406,19 @@ async function init() {
     $root.innerHTML = `<p class="error">No se pudo cargar el organigrama.</p>`;
   }
 }
+
+const backToTop = document.querySelector("#back-to-top");
+
+window.addEventListener("scroll", () => {
+  if (window.scrollY > 300) {
+    backToTop.classList.add("visible");
+  } else {
+    backToTop.classList.remove("visible");
+  }
+});
+
+backToTop.addEventListener("click", () => {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
 
 init();

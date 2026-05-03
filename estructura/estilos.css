@@ -18,11 +18,52 @@ body {
 }
 
 h1 {
-  margin: 0 0 28px;
+  margin: 0;
   text-align: center;
   font-size: clamp(28px, 4vw, 48px);
   line-height: 1;
   color: #595957;
+}
+
+.back-to-top {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid #000;
+  background: #ece810;
+  color: #000;
+  font-size: 18px;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(0,0,0,.25);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s ease;
+}
+
+.back-to-top.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+  gap: 16px;
+}
+
+.year-selector {
+  font-family: inherit;
+  font-size: 16px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  background: #fff;
+  cursor: pointer;
 }
 
 .tree {
@@ -278,8 +319,8 @@ h1 {
 /* hover foto: separado para que en resp/adjunto no active las dos */
 .card:not(.nivel-rol-grupo):hover .avatar,
 .nivel-persona:hover .avatar {
-  box-shadow: 0 0 0 3px rgba(0,0,0,.18), 0 10px 28px rgba(0,0,0,.45);
-  transform: scale(1.02);
+  box-shadow: 0 6px 16px rgba(0,0,0,.35);
+  transform: scale(1.015);
 }
 
 .card:not(.nivel-rol-grupo):hover .avatar img,
@@ -428,9 +469,14 @@ body.lightbox-open {
 }
 
 #lightbox-taller {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid #d0d0d0;
+  font-size: 14px;
   color: #595957;
-  font-weight: 500;
-  font-size: 18px;
 }
 
 #lightbox-comision {
