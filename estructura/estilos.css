@@ -127,42 +127,30 @@ h1 {
   justify-self: center;
 }
 
-.level-title {
+.level-head {
   position: sticky;
   top: 0;
   z-index: 20;
+  margin: -14px -14px 0;
+  background: #595957;
+  border-radius: 22px 22px 0 0;
+  overflow: hidden;
+}
+
+.level-head-cap {
+  height: 14px;
+  background: #595957;
+}
+
+.level-title {
   background: #595957;
   text-align: center;
   color: #fff;
   font-size: 24px;
   font-weight: 850;
-  margin: 0 -14px 0;
-  padding: 8px 10px 7px;
+  padding: 2px 10px 8px;
   border-bottom: 1px solid #e2e2e2;
   border-radius: 0;
-}
-
-.level-title::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: -14px;
-  height: 14px;
-  background: #595957;
-  border-radius: 22px 22px 0 0;
-  pointer-events: none;
-}
-
-.level-title::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -8px;
-  height: 8px;
-  background: #595957;
-  pointer-events: none;
 }
 
 .level-team {

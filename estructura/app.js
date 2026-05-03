@@ -376,7 +376,10 @@ function render(tables) {
 
     html += `
       <article class="level">
-        <div class="level-title">Nivel ${escapeHTML(nivelId)}</div>
+        <div class="level-head">
+          <div class="level-head-cap"></div>
+          <div class="level-title">Nivel ${escapeHTML(nivelId)}</div>
+        </div>
 
         <div class="level-team">
           ${nivelRoleGroup(adjuntos, responsables, docentes, nivelId)}
