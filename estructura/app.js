@@ -400,15 +400,20 @@ function render(tables) {
       <article class="level ${nivelPlegado ? "is-level-collapsed" : ""}" data-level-key="${escapeHTML(levelKey)}">
         <div class="level-head-cap"></div>
 
-        <div class="level-title">
-          <span class="level-title-spacer"></span>
+        <div
+          class="level-title"
+          role="button"
+          tabindex="0"
+          aria-expanded="${nivelPlegado ? "false" : "true"}"
+          aria-label="${nivelPlegado ? "Desplegar nivel" : "Plegar nivel"}"
+        >
           <span class="level-title-text">Nivel ${escapeHTML(nivelId)}</span>
 
           <button
             class="level-toggle"
             type="button"
-            aria-label="${nivelPlegado ? "Desplegar nivel" : "Plegar nivel"}"
-            aria-expanded="${nivelPlegado ? "false" : "true"}"
+            tabindex="-1"
+            aria-hidden="true"
           >
             <span>&gt;</span>
           </button>
@@ -567,26 +572,11 @@ function cerrarLightbox() {
 }
 
 /* =========================
-   EVENTS
+   COLLAPSE HELPERS
 ========================= */
 
-document.addEventListener("click", e => {
-  const card = e.target.closest("[data-docente-id]");
-  if (card) abrirLightbox(card);
-
-  if (e.target.matches(".lightbox-close") || e.target.matches(".lightbox-backdrop")) {
-    cerrarLightbox();
-  }
-});
-
-document.addEventListener("click", e => {
-  const title = e.target.closest(".level-title");
-  if (!title) return;
-
-  const level = title.closest(".level");
-  if (!level) return;
-
-  const toggle = level.querySelector(".level-toggle");
+function toggleLevel(level) {
+  const title = level.querySelector(".level-title");
   const key = level.dataset.levelKey;
   const quedaPlegado = !level.classList.contains("is-level-collapsed");
 
@@ -600,21 +590,15 @@ document.addEventListener("click", e => {
     }
   }
 
-  if (toggle) {
-    toggle.setAttribute("aria-expanded", quedaPlegado ? "false" : "true");
-    toggle.setAttribute("aria-label", quedaPlegado ? "Desplegar nivel" : "Plegar nivel");
+  if (title) {
+    title.setAttribute("aria-expanded", quedaPlegado ? "false" : "true");
+    title.setAttribute("aria-label", quedaPlegado ? "Desplegar nivel" : "Plegar nivel");
   }
 
   actualizarStickyLevels();
-});
+}
 
-document.addEventListener("click", e => {
-  const header = e.target.closest(".commission-header");
-  if (!header) return;
-
-  const commission = header.closest(".commission");
-  if (!commission) return;
-
+function toggleCommission(commission) {
   const toggle = commission.querySelector(".commission-toggle");
   const key = commission.dataset.commissionKey;
   const quedaPlegada = !commission.classList.contains("is-collapsed");
@@ -635,10 +619,46 @@ document.addEventListener("click", e => {
   }
 
   actualizarStickyLevels();
+}
+
+/* =========================
+   EVENTS
+========================= */
+
+document.addEventListener("click", e => {
+  const title = e.target.closest(".level-title");
+  if (title) {
+    const level = title.closest(".level");
+    if (level) toggleLevel(level);
+    return;
+  }
+
+  const header = e.target.closest(".commission-header");
+  if (header) {
+    const commission = header.closest(".commission");
+    if (commission) toggleCommission(commission);
+    return;
+  }
+
+  const card = e.target.closest("[data-docente-id]");
+  if (card) abrirLightbox(card);
+
+  if (e.target.matches(".lightbox-close") || e.target.matches(".lightbox-backdrop")) {
+    cerrarLightbox();
+  }
 });
 
 document.addEventListener("keydown", e => {
-  if (e.key === "Escape") cerrarLightbox();
+  if (e.key === "Escape") {
+    cerrarLightbox();
+    return;
+  }
+
+  if ((e.key === "Enter" || e.key === " ") && e.target.matches(".level-title")) {
+    e.preventDefault();
+    const level = e.target.closest(".level");
+    if (level) toggleLevel(level);
+  }
 });
 
 window.addEventListener("scroll", actualizarStickyLevels, { passive: true });

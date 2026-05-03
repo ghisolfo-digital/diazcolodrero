@@ -125,16 +125,7 @@ h1 {
   max-width: 570px;
   width: 100%;
   justify-self: center;
-}
-
-.level-head {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  margin: -14px -14px 0;
-  background: #595957;
-  border-radius: 22px 22px 0 0;
-  overflow: hidden;
+  container-type: inline-size;
 }
 
 .level-head-cap {
@@ -148,14 +139,71 @@ h1 {
   position: sticky;
   top: 0;
   z-index: 20;
+  display: grid;
+  grid-template-columns: 1fr 22px;
+  align-items: center;
+  gap: 10px;
   background: #595957;
-  text-align: center;
+  text-align: left;
   color: #fff;
   font-size: 24px;
   font-weight: 850;
   margin: 0 -14px;
-  padding: 5px 10px 6px 8px;
+  padding: 5px 10px 6px 12px;
   border-radius: 0;
+  transition: box-shadow .18s ease;
+  cursor: pointer;
+}
+
+.level-title-text {
+  justify-self: start;
+  min-width: 0;
+}
+
+.level-toggle {
+  justify-self: end;
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  appearance: none;
+  -webkit-appearance: none;
+  border: 1px solid rgba(255,255,255,.48);
+  border-radius: 50%;
+  background: transparent;
+  color: rgba(255,255,255,.72);
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  transform: none;
+  transition: background .18s ease, border-color .18s ease, color .18s ease;
+}
+
+.level-toggle span {
+  display: block;
+  width: 1em;
+  height: 1em;
+  line-height: .9em;
+  transform-origin: 50% 50%;
+  transform: rotate(90deg);
+  transition: transform .18s ease;
+}
+
+.level-title:hover .level-toggle {
+  background: rgba(255,255,255,.18);
+  border-color: #fff;
+  color: #fff;
+}
+
+.level.is-level-collapsed .level-toggle span {
+  transform: rotate(0deg);
+}
+
+.level.is-level-sticky .level-title {
+  box-shadow: 0 8px 14px rgba(0,0,0,.16);
 }
 
 .level-head-base {
@@ -163,6 +211,7 @@ h1 {
   margin: 0 -14px;
   background: #595957;
   border-bottom: 1px solid #e2e2e2;
+  box-shadow: 0 8px 14px rgba(0,0,0,.10);
 }
 
 .level-team {
@@ -170,6 +219,11 @@ h1 {
   flex-direction: column;
   gap: 0;
   margin: 0 -14px;
+}
+
+.level.is-level-collapsed .level-team,
+.level.is-level-collapsed .commissions {
+  display: none;
 }
 
 /* =========================
@@ -205,6 +259,7 @@ h1 {
   padding: 0;
   background: transparent;
   border-bottom: 0;
+  cursor: pointer;
 }
 
 .commission-meta {
@@ -224,6 +279,7 @@ h1 {
 }
 
 .commission-name {
+  flex: 1;
   font-size: 18px;
   line-height: 1.1;
   font-weight: 850;
@@ -242,29 +298,24 @@ h1 {
   gap: 10px;
 }
 
-.commission-name {
-  flex: 1;
-}
-
-.commission-header {
-  cursor: pointer;
-}
-
 .commission-toggle {
   flex: 0 0 auto;
-  width: 32px;
-  height: 32px;
+  width: 22px;
+  height: 22px;
   display: grid;
   place-items: center;
+  appearance: none;
+  -webkit-appearance: none;
   border: 1px solid #c9c9c0;
-  border-radius: 999px;
+  border-radius: 50%;
   background: #fff;
   color: #8a8a84;
   font-family: inherit;
-  font-size: 22px;
+  font-size: 14px;
   line-height: 1;
   cursor: pointer;
   padding: 0;
+  margin: 0;
   transform: none;
   transition: background .18s ease, border-color .18s ease, color .18s ease;
 }
@@ -280,14 +331,13 @@ h1 {
 }
 
 .commission-header:hover .commission-toggle {
-  transform: rotate(0deg);
   background: #ece810;
   border-color: #000;
   color: #000;
 }
 
 .commission.is-collapsed .commission-toggle span {
-  transform: rotate(-90deg);
+  transform: rotate(0deg);
 }
 
 .commission.is-collapsed .commission-team {
@@ -328,10 +378,6 @@ h1 {
   height: 96px;
 }
 
-.level {
-  container-type: inline-size;
-}
-
 @container (min-width: 500px) {
   .commission-team {
     flex-direction: row;
@@ -358,8 +404,6 @@ h1 {
     border-left: 1px solid #d4d4cc;
   }
 }
-
-
 
 /* =========================
    CARDS
@@ -435,7 +479,6 @@ h1 {
 
 .nivel-persona:hover {
   background: rgba(255, 255, 255, 0.18);
-
 }
 
 .nivel-persona .info strong {
@@ -764,13 +807,13 @@ body.lightbox-open {
     font-size: 19px;
   }
 
-.top-catedra {
-  flex-wrap: wrap;
-}
+  .top-catedra {
+    flex-wrap: wrap;
+  }
 
-.top-catedra .card.principal {
-  width: min(300px, 100%);
-  max-width: 300px;
-  flex: 0 1 300px;
-}
+  .top-catedra .card.principal {
+    width: min(300px, 100%);
+    max-width: 300px;
+    flex: 0 1 300px;
+  }
 }
