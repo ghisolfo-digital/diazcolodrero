@@ -71,6 +71,7 @@ h1 {
   align-items: stretch;
   gap: 18px;
   flex-wrap: nowrap;
+  margin-bottom: 12px;
 }
 
 .top-catedra .card.principal {
@@ -105,6 +106,47 @@ h1 {
 /* =========================
    NIVELES
 ========================= */
+
+html {
+  scroll-behavior: smooth;
+}
+
+.level-index {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: -4px 0 0;
+}
+
+.level-index a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 7px 13px;
+  border: 1px solid #d1d1c8;
+  border-radius: 999px;
+  background: #fff;
+  color: #595957;
+  font-size: 14px;
+  font-weight: 750;
+  line-height: 1;
+  text-decoration: none;
+  transition: background .18s ease, border-color .18s ease, color .18s ease;
+}
+
+.level-index a:hover {
+  background: #ece810;
+  border-color: #000;
+  color: #000;
+}
+
+.level {
+  scroll-margin-top: 16px;
+}
 
 .levels {
   width: 100%;
@@ -428,8 +470,13 @@ h1 {
   width: min(300px, 100%);
   justify-content: center;
   background: #ece810;
-  border: 1px solid #000;
+  border: 1px solid #595957;
   box-shadow: 0 10px 28px rgba(0,0,0,.08);
+  transition: border-color .18s ease, box-shadow .18s ease;
+}
+
+.card.principal:hover {
+  border-color: #000;
 }
 
 .card.nivel-rol {

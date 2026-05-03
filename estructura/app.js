@@ -33,6 +33,16 @@ function escapeHTML(str) {
     .replaceAll("'", "&#039;");
 }
 
+function domId(str) {
+  return String(str || "")
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9_-]+/g, "-")
+    .replace(/^-+|-+$/g, "") || "item";
+}
+
 function capitalizar(texto) {
   const t = String(texto || "").trim();
   return t ? t.charAt(0).toUpperCase() + t.slice(1) : "";
@@ -365,9 +375,26 @@ function render(tables) {
   const jefatura = niveles.find(n => n.ID === "todo");
   const nivelesReales = niveles.filter(n => n.ID !== "todo");
 
-  let html = "";
+let html = "";
 
-  if (jefatura) {
+if (nivelesReales.length) {
+  html += `
+    <nav class="level-index" aria-label="Índice de niveles">
+      ${nivelesReales.map(nivel => {
+        const nivelId = String(nivel.ID || "").trim();
+        const nivelDomId = domId(nivelId);
+
+        return `
+          <a href="#nivel-${escapeHTML(nivelDomId)}">
+            Nivel ${escapeHTML(nivelId)}
+          </a>
+        `;
+      }).join("")}
+    </nav>
+  `;
+}
+
+if (jefatura) {
     html += `<section class="top-catedra">`;
 
     splitIds(jefatura["A cargo"]).forEach(id => {
@@ -395,6 +422,7 @@ function render(tables) {
 
     const levelKey = `${CURRENT_YEAR}-${nivelId}`;
     const nivelPlegado = collapsedLevels.has(levelKey);
+    const nivelDomId = domId(nivelId);
 
     html += `
       <article class="level ${nivelPlegado ? "is-level-collapsed" : ""}" data-level-key="${escapeHTML(levelKey)}">
