@@ -223,11 +223,12 @@ h1 {
   height: 1em;
   line-height: 1em;
   transform-origin: 50% 50%;
-  transform: rotate(0deg);
+  transform: rotate(90deg);
   transition: transform .18s ease;
 }
 
 .commission-header:hover .commission-toggle {
+  transform: rotate(0deg);
   background: #ece810;
   border-color: #000;
   color: #000;
