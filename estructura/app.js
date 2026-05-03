@@ -733,6 +733,11 @@ function toggleCommission(commission) {
   actualizarStickyLevels();
 }
 
+function resetCollapses() {
+  collapsedCommissions.clear();
+  collapsedLevels.clear();
+}
+
 /* =========================
    EVENTS
 ========================= */
@@ -827,11 +832,12 @@ async function init() {
 
     render(tables);
 
-    $yearSelector?.addEventListener("change", e => {
-      CURRENT_YEAR = e.target.value;
-      actualizarURLConAnio(CURRENT_YEAR);
-      renderConTransicion(tables);
-    });
+$yearSelector?.addEventListener("change", e => {
+  CURRENT_YEAR = e.target.value;
+  resetCollapses();
+  actualizarURLConAnio(CURRENT_YEAR);
+  renderConTransicion(tables);
+});
 
     window.addEventListener("popstate", () => {
       const anioURL = getAnioDesdeURL();
@@ -839,13 +845,14 @@ async function init() {
 
       if (!anioURL || !aniosDisponibles.includes(anioURL)) return;
 
-      CURRENT_YEAR = anioURL;
+CURRENT_YEAR = anioURL;
+resetCollapses();
 
-      if ($yearSelector) {
-        $yearSelector.value = CURRENT_YEAR;
-      }
+if ($yearSelector) {
+  $yearSelector.value = CURRENT_YEAR;
+}
 
-      renderConTransicion(tables);
+renderConTransicion(tables);
     });
   } catch (error) {
     console.error(error);
