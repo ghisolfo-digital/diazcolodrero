@@ -5,6 +5,7 @@ const $yearSelector = document.querySelector("#year-selector");
 
 let CURRENT_YEAR = String(new Date().getFullYear());
 const collapsedCommissions = new Set();
+const collapsedLevels = new Set();
 
 /* =========================
    HELPERS
@@ -328,6 +329,24 @@ function cargarSelectorDeAnios(anios) {
 }
 
 /* =========================
+   STICKY LEVELS
+========================= */
+
+function actualizarStickyLevels() {
+  document.querySelectorAll(".level").forEach(level => {
+    const title = level.querySelector(".level-title");
+    if (!title) return;
+
+    const titleRect = title.getBoundingClientRect();
+    const levelRect = level.getBoundingClientRect();
+
+    const estaSticky = titleRect.top <= 0 && levelRect.bottom > titleRect.height + 20;
+
+    level.classList.toggle("is-level-sticky", estaSticky);
+  });
+}
+
+/* =========================
    RENDER
 ========================= */
 
@@ -374,10 +393,27 @@ function render(tables) {
     const adjuntos = splitIds(nivel.Adjunto);
     const coms = comisiones.filter(c => String(c.ID || "").startsWith(nivelId));
 
+    const levelKey = `${CURRENT_YEAR}-${nivelId}`;
+    const nivelPlegado = collapsedLevels.has(levelKey);
+
     html += `
-      <article class="level">
+      <article class="level ${nivelPlegado ? "is-level-collapsed" : ""}" data-level-key="${escapeHTML(levelKey)}">
         <div class="level-head-cap"></div>
-        <div class="level-title">Nivel ${escapeHTML(nivelId)}</div>
+
+        <div class="level-title">
+          <span class="level-title-spacer"></span>
+          <span class="level-title-text">Nivel ${escapeHTML(nivelId)}</span>
+
+          <button
+            class="level-toggle"
+            type="button"
+            aria-label="${nivelPlegado ? "Desplegar nivel" : "Plegar nivel"}"
+            aria-expanded="${nivelPlegado ? "false" : "true"}"
+          >
+            <span>&gt;</span>
+          </button>
+        </div>
+
         <div class="level-head-base"></div>
 
         <div class="level-team">
@@ -446,6 +482,7 @@ function render(tables) {
   html += `</section>`;
 
   $root.innerHTML = html;
+  actualizarStickyLevels();
 }
 
 function renderConTransicion(tables) {
@@ -456,6 +493,7 @@ function renderConTransicion(tables) {
 
     requestAnimationFrame(() => {
       $root.classList.remove("is-changing");
+      actualizarStickyLevels();
     });
   }, 220);
 }
@@ -528,6 +566,10 @@ function cerrarLightbox() {
   document.body.classList.remove("lightbox-open");
 }
 
+/* =========================
+   EVENTS
+========================= */
+
 document.addEventListener("click", e => {
   const card = e.target.closest("[data-docente-id]");
   if (card) abrirLightbox(card);
@@ -535,6 +577,35 @@ document.addEventListener("click", e => {
   if (e.target.matches(".lightbox-close") || e.target.matches(".lightbox-backdrop")) {
     cerrarLightbox();
   }
+});
+
+document.addEventListener("click", e => {
+  const title = e.target.closest(".level-title");
+  if (!title) return;
+
+  const level = title.closest(".level");
+  if (!level) return;
+
+  const toggle = level.querySelector(".level-toggle");
+  const key = level.dataset.levelKey;
+  const quedaPlegado = !level.classList.contains("is-level-collapsed");
+
+  level.classList.toggle("is-level-collapsed", quedaPlegado);
+
+  if (key) {
+    if (quedaPlegado) {
+      collapsedLevels.add(key);
+    } else {
+      collapsedLevels.delete(key);
+    }
+  }
+
+  if (toggle) {
+    toggle.setAttribute("aria-expanded", quedaPlegado ? "false" : "true");
+    toggle.setAttribute("aria-label", quedaPlegado ? "Desplegar nivel" : "Plegar nivel");
+  }
+
+  actualizarStickyLevels();
 });
 
 document.addEventListener("click", e => {
@@ -562,11 +633,16 @@ document.addEventListener("click", e => {
     toggle.setAttribute("aria-expanded", quedaPlegada ? "false" : "true");
     toggle.setAttribute("aria-label", quedaPlegada ? "Desplegar comisión" : "Plegar comisión");
   }
+
+  actualizarStickyLevels();
 });
 
 document.addEventListener("keydown", e => {
   if (e.key === "Escape") cerrarLightbox();
 });
+
+window.addEventListener("scroll", actualizarStickyLevels, { passive: true });
+window.addEventListener("resize", actualizarStickyLevels);
 
 /* =========================
    BACK TO TOP
