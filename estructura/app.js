@@ -3,7 +3,7 @@ const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQZYeQoQBd_4Kzz
 const $root = document.querySelector("#organigrama");
 const $yearSelector = document.querySelector("#year-selector");
 
-let CURRENT_YEAR = $yearSelector?.value || "2026";
+let CURRENT_YEAR = String(new Date().getFullYear());
 
 /* =========================
    HELPERS
@@ -257,8 +257,27 @@ function nivelRoleGroup(adjuntos, responsables, docentes, nivelId) {
 }
 
 /* =========================
-   AÑOS
+   AÑOS / URL
 ========================= */
+
+function getAnioActual() {
+  return String(new Date().getFullYear());
+}
+
+function getAnioDesdeURL() {
+  const params = new URLSearchParams(window.location.search);
+  const anio = params.get("a");
+
+  return anio && /^\d{4}$/.test(anio) ? anio : "";
+}
+
+function actualizarURLConAnio(anio, reemplazar = false) {
+  const url = new URL(window.location.href);
+  url.searchParams.set("a", anio);
+
+  const metodo = reemplazar ? "replaceState" : "pushState";
+  window.history[metodo]({ anio }, "", url);
+}
 
 function obtenerAniosDisponibles(tables) {
   const anios = [
@@ -271,24 +290,40 @@ function obtenerAniosDisponibles(tables) {
     .sort((a, b) => Number(a) - Number(b));
 }
 
+function elegirAnioInicial(aniosDisponibles) {
+  const anioURL = getAnioDesdeURL();
+  const anioActual = getAnioActual();
+
+  if (anioURL && aniosDisponibles.includes(anioURL)) {
+    return anioURL;
+  }
+
+  if (aniosDisponibles.includes(anioActual)) {
+    return anioActual;
+  }
+
+  return (
+    aniosDisponibles
+      .filter(a => Number(a) <= Number(anioActual))
+      .at(-1) ||
+    aniosDisponibles.at(-1) ||
+    anioActual
+  );
+}
+
 function cargarSelectorDeAnios(anios) {
   if (!$yearSelector) return;
 
-  const anioActual = new Date().getFullYear();
-
   const aniosOrdenados = [...anios].sort((a, b) => Number(a) - Number(b));
-
-  const anioDefault =
-    aniosOrdenados
-      .filter(a => Number(a) <= anioActual)
-      .at(-1) || aniosOrdenados[0] || "2026";
 
   $yearSelector.innerHTML = aniosOrdenados
     .map(anio => `<option value="${escapeHTML(anio)}">${escapeHTML(anio)}</option>`)
     .join("");
 
-  CURRENT_YEAR = anioDefault;
+  CURRENT_YEAR = elegirAnioInicial(aniosOrdenados);
   $yearSelector.value = CURRENT_YEAR;
+
+  actualizarURLConAnio(CURRENT_YEAR, true);
 }
 
 /* =========================
@@ -526,6 +561,22 @@ async function init() {
 
     $yearSelector?.addEventListener("change", e => {
       CURRENT_YEAR = e.target.value;
+      actualizarURLConAnio(CURRENT_YEAR);
+      renderConTransicion(tables);
+    });
+
+    window.addEventListener("popstate", () => {
+      const anioURL = getAnioDesdeURL();
+      const aniosDisponibles = obtenerAniosDisponibles(tables);
+
+      if (!anioURL || !aniosDisponibles.includes(anioURL)) return;
+
+      CURRENT_YEAR = anioURL;
+
+      if ($yearSelector) {
+        $yearSelector.value = CURRENT_YEAR;
+      }
+
       renderConTransicion(tables);
     });
   } catch (error) {
