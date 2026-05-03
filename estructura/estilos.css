@@ -224,7 +224,7 @@ html {
   margin: 0;
   cursor: pointer;
   transform: none;
-  transition: background .18s ease, border-color .18s ease, color .18s ease;
+  transition: background .18s ease, border-color .18s ease, color .18s ease, box-shadow .18s ease;
 }
 
 .level-toggle span {
@@ -241,6 +241,7 @@ html {
   background: rgba(255,255,255,.18);
   border-color: #fff;
   color: #fff;
+  box-shadow: 0 5px 12px rgba(0,0,0,.22);
 }
 
 .level.is-level-collapsed .level-toggle span {
@@ -362,7 +363,7 @@ html {
   padding: 0;
   margin: 0;
   transform: none;
-  transition: background .18s ease, border-color .18s ease, color .18s ease;
+  transition: background .18s ease, border-color .18s ease, color .18s ease, box-shadow .18s ease;
 }
 
 .commission-toggle span {
@@ -379,8 +380,8 @@ html {
   background: #ece810;
   border-color: #000;
   color: #000;
+  box-shadow: 0 5px 12px rgba(0,0,0,.18);
 }
-
 .commission.is-collapsed {
   background: #f7f7f3;
   border-color: #deded6;
@@ -726,20 +727,21 @@ body.lightbox-open {
   right: 10px;
   width: 38px;
   height: 38px;
-  border: 0;
+  border: 1px solid #d0d0ca;
   border-radius: 50%;
-  background: #d8d8d2;
+  background: transparent;
   font-size: 34px;
   line-height: 1;
   cursor: pointer;
-  color: #000;
+  color: #595957;
   box-shadow: none;
-  transition: background .18s ease, box-shadow .18s ease, transform .18s ease;
+  transition: border-color .18s ease, color .18s ease, box-shadow .18s ease, transform .18s ease;
 }
 
 .lightbox-close:hover {
-  background: #ece810;
-  box-shadow: 0 8px 18px rgba(0,0,0,.24);
+  border-color: #000;
+  color: #000;
+  box-shadow: 0 8px 18px rgba(0,0,0,.18);
   transform: translateY(-1px);
 }
 
@@ -787,6 +789,9 @@ body.lightbox-open {
 
 #lightbox-nivel {
   margin-bottom: 2px;
+  font-size: 16px;
+  font-weight: 750;
+  color: #000;
 }
 
 #lightbox-taller {
@@ -794,7 +799,7 @@ body.lightbox-open {
   display: inline-block;
   width: auto;
   max-width: max-content;
-  margin-top: 8px;
+  margin-top: 4px;
   margin-bottom: 0;
   padding: 4px 10px;
   border-radius: 999px;
