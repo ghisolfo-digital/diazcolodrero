@@ -542,7 +542,7 @@ function render(tables) {
             const mostrarCabeza = boolValue(com["Mostrar a cargo"]);
 
             const comisionId = getComisionId(com);
-            const comisionLabel = getComisionLabel(com);
+            const comisionLabel = getComisionId(com);
 
             const nombreComision = coms.length === 1
               ? "Comisión"
