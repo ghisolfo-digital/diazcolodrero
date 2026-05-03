@@ -81,14 +81,17 @@ function initials(docente) {
 function displayName(docente) {
   const soloApodo = boolValue(docente["SóloApodo"]);
   const apodo = docente.apodo?.trim() || "";
-  const nombre = `${docente.nombre || ""} ${docente.apellido || ""}`.trim();
+  const nombre = docente.nombre?.trim() || "";
+  const apellido = docente.apellido?.trim() || "";
 
-  if (soloApodo && apodo) return apodo;
+  if (soloApodo && apodo) {
+    return `${apodo} ${apellido}`.trim();
+  }
 
-  return nombre || apodo || "Sin nombre";
+  return `${nombre} ${apellido}`.trim() || apodo || "Sin nombre";
 }
 
-function docenteCard(id, docentes, rol = "", extraClass = "") {
+function docenteCard(id, docentes, rol = "", extraClass = "", meta = {}) {
   const docente = docentes[id];
 
   if (!docente) {
@@ -116,13 +119,22 @@ function docenteCard(id, docentes, rol = "", extraClass = "") {
     : `<div class="avatar-fallback" aria-label="Sin foto"></div>`;
 
   return `
-    <div class="${classes}">
+    <button 
+      class="${classes}" 
+      type="button"
+      data-docente-id="${escapeHTML(id)}"
+      data-rol="${escapeHTML(rolFinal)}"
+      data-nivel="${escapeHTML(meta.nivel || "")}"
+      data-comision="${escapeHTML(meta.comision || "")}"
+      data-taller="${escapeHTML(meta.taller || "")}"
+      data-equipo="${escapeHTML(meta.equipo || "")}"
+    >
       <div class="avatar">${avatar}</div>
       <div class="info">
         <strong>${escapeHTML(displayName(docente))}</strong>
         ${rolFinal ? `<em>${escapeHTML(rolFinal)}</em>` : ""}
       </div>
-    </div>
+    </button>
   `;
 }
 
@@ -174,7 +186,7 @@ function nombreComisionPorDocentes(ids, docentes) {
     .join(" + ");
 }
 
-function nivelRoleGroup(adjuntos, responsables, docentes) {
+function nivelRoleGroup(adjuntos, responsables, docentes, nivelId) {
   const personas = [
     ...adjuntos.map(id => ({ id, rol: "Adjunto" })),
     ...responsables.map(id => ({ id, rol: "Resp. nivel" }))
@@ -203,13 +215,22 @@ function nivelRoleGroup(adjuntos, responsables, docentes) {
           : `<div class="avatar-fallback" aria-label="Sin foto"></div>`;
 
         return `
-          <div class="nivel-persona">
+          <button 
+            class="nivel-persona"
+            type="button"
+            data-docente-id="${escapeHTML(p.id)}"
+            data-rol="${escapeHTML(p.rol)}"
+            data-nivel="${escapeHTML(nivelId)}"
+            data-comision=""
+            data-taller=""
+            data-equipo=""
+          >
             <div class="avatar">${avatar}</div>
             <div class="info">
               <strong>${escapeHTML(displayName(docente))}</strong>
               <em>${escapeHTML(p.rol)}</em>
             </div>
-          </div>
+          </button>
         `;
       }).join("")}
     </div>
@@ -226,16 +247,20 @@ function render(tables) {
     docentes[d.ID] = d;
   });
 
+  window.__docentes = docentes;
+
   const jefatura = niveles.find(n => n.ID === "todo");
   const nivelesReales = niveles.filter(n => n.ID !== "todo");
 
   let html = "";
 
   if (jefatura) {
-    splitIds(jefatura["A cargo"]).forEach(id => {
-      html += docenteCard(id, docentes, "Titular", "principal");
+  splitIds(jefatura["A cargo"]).forEach(id => {
+    html += docenteCard(id, docentes, "Titular", "principal", {
+      nivel: "General"
     });
-  }
+  });
+}
 
   html += `<section class="levels">`;
 
@@ -250,7 +275,7 @@ function render(tables) {
         <div class="level-title">Nivel ${escapeHTML(nivelId)}</div>
 
         <div class="level-team">
-          ${nivelRoleGroup(adjuntos, responsables, docentes)}
+          ${nivelRoleGroup(adjuntos, responsables, docentes, nivelId)}
         </div>
 
         <div class="commissions">
@@ -267,7 +292,12 @@ function render(tables) {
               </div>
 
               <div class="commission-team">
-                ${splitIds(com.Docentes).map(id => docenteCard(id, docentes)).join("")}
+                ${splitIds(com.Docentes).map(id => docenteCard(id, docentes, "", "", {
+                  nivel: nivelId,
+                  comision: com.ID,
+                  taller: com.Aula,
+                  equipo: nombreComisionPorDocentes(splitIds(com.Docentes), docentes)
+                })).join("")}
               </div>
             </section>
           `).join("")}
@@ -293,5 +323,67 @@ async function init() {
     $root.innerHTML = `<p class="error">No se pudo cargar el organigrama.</p>`;
   }
 }
+
+function nombreReal(docente) {
+  return `${docente.nombre || ""} ${docente.apellido || ""}`.trim();
+}
+
+function abrirLightbox(card) {
+  const id = card.dataset.docenteId;
+  const docente = window.__docentes?.[id];
+
+  if (!docente) return;
+
+  const lightbox = document.querySelector("#lightbox");
+  const photo = document.querySelector("#lightbox-photo");
+  const name = document.querySelector("#lightbox-name");
+  const apodo = document.querySelector("#lightbox-apodo");
+  const comision = document.querySelector("#lightbox-comision");
+  const nivel = document.querySelector("#lightbox-nivel");
+  const equipo = document.querySelector("#lightbox-equipo");
+
+  const foto = driveImageUrl(docente.Foto);
+
+  photo.innerHTML = foto
+    ? `<img src="${escapeHTML(foto)}" alt="${escapeHTML(nombreReal(docente))}">`
+    : `<div class="avatar-fallback"></div>`;
+
+  name.textContent = nombreReal(docente);
+  apodo.textContent = docente.apodo ? docente.apodo : "";
+
+  comision.textContent = card.dataset.comision
+    ? `Comisión ${card.dataset.comision} · Taller ${card.dataset.taller}`
+    : card.dataset.rol || "";
+
+  nivel.textContent = card.dataset.nivel
+    ? `Nivel ${card.dataset.nivel}`
+    : "";
+
+  equipo.textContent = card.dataset.equipo || "";
+
+  lightbox.hidden = false;
+  document.body.classList.add("lightbox-open");
+}
+
+function cerrarLightbox() {
+  document.querySelector("#lightbox").hidden = true;
+  document.body.classList.remove("lightbox-open");
+}
+
+document.addEventListener("click", e => {
+  const card = e.target.closest("[data-docente-id]");
+  if (card) abrirLightbox(card);
+
+  if (
+    e.target.matches(".lightbox-close") ||
+    e.target.matches(".lightbox-backdrop")
+  ) {
+    cerrarLightbox();
+  }
+});
+
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") cerrarLightbox();
+});
 
 init();
