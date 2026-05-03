@@ -102,6 +102,7 @@ function docenteCard(id, docentes, rol = "", extraClass = "") {
 
   const foto = driveImageUrl(docente.Foto);
   const destacar = boolValue(docente.MostrarCabeza);
+  const rolFinal = rol || (destacar ? "A cargo" : "");
 
   const classes = [
     "card",
@@ -119,7 +120,7 @@ function docenteCard(id, docentes, rol = "", extraClass = "") {
       <div class="avatar">${avatar}</div>
       <div class="info">
         <strong>${escapeHTML(displayName(docente))}</strong>
-        ${rol ? `<em>${escapeHTML(rol)}</em>` : ""}
+        ${rolFinal ? `<em>${escapeHTML(rolFinal)}</em>` : ""}
       </div>
     </div>
   `;
@@ -220,7 +221,7 @@ function render(tables) {
                   <span class="aula">Aula ${escapeHTML(com.Aula)}</span>
                 </div>
                 <div class="commission-name">
-                  ${escapeHTML(nombreComisionPorDocentes(splitIds(com.Docentes), docentes))}
+                  Comisión ${escapeHTML(com.ID)}
                 </div>
               </div>
 
