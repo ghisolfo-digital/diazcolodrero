@@ -221,8 +221,8 @@ html {
   padding: 0;
   margin: 0;
   cursor: pointer;
-  transform: none;
-  transition: width .18s ease, height .18s ease, font-size .18s ease, background .18s ease, border-color .18s ease, color .18s ease, box-shadow .18s ease;
+  transform: scale(1);
+  transition: transform .18s ease, background .18s ease, border-color .18s ease, color .18s ease, box-shadow .18s ease;
 }
 
 .level-toggle span {
@@ -236,9 +236,7 @@ html {
 }
 
 .level-title:hover .level-toggle {
-  width: 24px;
-  height: 24px;
-  font-size: 15px;
+  transform: scale(1.18);
   background: #ece810;
   border-color: #000;
   color: #000;
