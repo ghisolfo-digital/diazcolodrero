@@ -56,8 +56,7 @@ h1 {
   border-bottom: 1px solid #e2e2e2;
 }
 
-.level-team,
-.commission-team {
+.level-team {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -75,8 +74,9 @@ h1 {
 .commission {
   border: 1px solid #d1d1c8;
   border-radius: 18px;
-  padding: 12px;
+  padding: 14px;
   background: #ecece5;
+  overflow: hidden;
 }
 
 .commission-header {
@@ -88,12 +88,18 @@ h1 {
 
 .commission-meta {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
+  gap: 12px;
 }
 
 .commission-label {
-  display: none;
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: #777;
+  text-transform: uppercase;
+  letter-spacing: .06em;
 }
 
 .commission-name {
@@ -113,7 +119,31 @@ h1 {
   white-space: nowrap;
 }
 
-/* CARDS */
+.commission-team {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border-top: 1px solid #d4d4cc;
+}
+
+.commission-team .card {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  padding: 12px 4px;
+  box-shadow: none;
+}
+
+.commission-team .card + .card {
+  border-top: 1px solid #d4d4cc;
+}
+
+.commission-team .avatar {
+  width: 96px;
+  height: 96px;
+}
+
+/* CARDS GENERALES */
 
 .card {
   display: flex;
@@ -135,8 +165,7 @@ h1 {
 
 /* cabeza de comisión: sin color, solo etiqueta */
 .card.cabeza-visible {
-  border: 1px solid #dedede;
-  background: #fff;
+  background: transparent;
 }
 
 /* roles de nivel */
