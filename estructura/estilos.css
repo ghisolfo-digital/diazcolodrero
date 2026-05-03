@@ -667,7 +667,7 @@ html {
   font-size: 15px;
 }
 
-.card:hover .info strong,
+.card:not(.nivel-rol-grupo):hover .info strong,
 .nivel-persona:hover .info strong {
   color: #000;
 }
