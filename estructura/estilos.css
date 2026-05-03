@@ -338,6 +338,25 @@ html {
   display: none;
 }
 
+.tree.hide-photos .avatar {
+  display: none;
+}
+
+.tree.hide-photos .card,
+.tree.hide-photos .nivel-persona {
+  align-items: flex-start;
+  text-align: left;
+}
+
+.tree.hide-photos .info {
+  align-items: flex-start;
+  text-align: left;
+}
+
+.tree.hide-photos .info strong {
+  font-weight: 400;
+}
+
 /* =========================
    COMISIONES
 ========================= */
