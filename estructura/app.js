@@ -415,7 +415,7 @@ function render(tables) {
                       aria-label="${estaPlegada ? "Desplegar comisión" : "Plegar comisión"}"
                       aria-expanded="${estaPlegada ? "false" : "true"}"
                     >
-                      <span>⌄</span>
+                      <span>▼</span>
                     </button>
                   </div>
                 </div>
