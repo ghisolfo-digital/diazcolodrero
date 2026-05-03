@@ -79,6 +79,29 @@ h1 {
   flex: 0 0 300px;
 }
 
+.card.principal {
+  position: relative;
+  overflow: hidden;
+}
+
+.card.principal > * {
+  position: relative;
+  z-index: 1;
+}
+
+.card.principal::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0);
+  transition: background .18s ease;
+  pointer-events: none;
+}
+
+.card.principal:hover::after {
+  background: rgba(255, 255, 255, 0.18);
+}
+
 /* =========================
    NIVELES
 ========================= */
@@ -476,7 +499,14 @@ h1 {
 }
 
 .info strong {
+  color: #595957;
+  transition: color .18s ease;
   font-size: 15px;
+}
+
+.card:hover .info strong,
+.nivel-persona:hover .info strong {
+  color: #000;
 }
 
 .info em {
