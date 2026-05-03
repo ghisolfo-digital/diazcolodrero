@@ -159,6 +159,20 @@ function comisionesDelNivel(nivelId, comisiones) {
   return comisiones.filter(c => String(c.ID || "").startsWith(nivelId));
 }
 
+function nombreComisionPorDocentes(ids, docentes) {
+  return ids
+    .map(id => {
+      const d = docentes[id];
+      if (!d) return id;
+
+      const apodo = d.apodo?.trim();
+      const nombre = d.nombre?.trim();
+
+      return apodo || nombre || id;
+    })
+    .join(" + ");
+}
+
 function render(tables) {
   const niveles = tables.niveles || [];
   const comisiones = tables.comisiones || [];
@@ -176,7 +190,7 @@ function render(tables) {
 
   if (jefatura) {
     splitIds(jefatura["A cargo"]).forEach(id => {
-      html += docenteCard(id, docentes, "Jefatura", "principal");
+      html += docenteCard(id, docentes, "Titular", "principal");
     });
   }
 
@@ -193,15 +207,15 @@ function render(tables) {
         <div class="level-title">Nivel ${escapeHTML(nivelId)}</div>
 
         <div class="level-team">
-          ${responsables.map(id => docenteCard(id, docentes, "A cargo")).join("")}
           ${adjuntos.map(id => docenteCard(id, docentes, "Adjunto")).join("")}
+          ${responsables.map(id => docenteCard(id, docentes, "Resp. nivel")).join("")}
         </div>
 
         <div class="commissions">
           ${coms.map(com => `
             <section class="commission">
               <div class="commission-header">
-                <span>Comisión ${escapeHTML(com.ID)}</span>
+                <span>Comisión ${escapeHTML(nombreComisionPorDocentes(splitIds(com.Docentes), docentes))}</span>
                 <span class="aula">Aula ${escapeHTML(com.Aula)}</span>
               </div>
 
