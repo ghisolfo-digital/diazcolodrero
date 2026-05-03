@@ -1,4 +1,4 @@
-const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQZYeQoQBd_4Kzz8E2FxrAqISWC8mYanr1Cw0HIw6r1ZwRUUtiQgUyU-bteg11Pmf3Kqk-xjgDUzS-b/pub?gid=0&single=true&output=csv";
+const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQZYeQoQBd_4Kzz8E2FxrAqISWC8mYanr1Cw0HIw6r1ZwRUUtiQgUyU-bteg11Pmf3KQk-xjgDUzS-b/pub?gid=0&single=true&output=csv";
 
 const $root = document.querySelector("#organigrama");
 const $yearSelector = document.querySelector("#year-selector");
@@ -84,11 +84,6 @@ function getComisionId(item) {
 
   if (nivel && comision) return `${nivel}${comision}`;
   return String(item.ID || "").trim();
-}
-
-function getComisionLabel(item) {
-  const comision = getComisionParte(item);
-  return comision || getComisionId(item);
 }
 
 /* =========================
@@ -248,6 +243,7 @@ function docenteCard(id, docentes, rol = "", extraClass = "", meta = {}) {
       data-nombre-comision="${escapeHTML(meta.nombreComision || "")}"
       data-taller="${escapeHTML(meta.taller || "")}"
       data-equipo="${escapeHTML(meta.equipo || "")}"
+      data-ciclo="${escapeHTML(meta.ciclo || CURRENT_YEAR)}"
     >
       <div class="avatar">${avatar}</div>
       <div class="info">
@@ -258,7 +254,7 @@ function docenteCard(id, docentes, rol = "", extraClass = "", meta = {}) {
   `;
 }
 
-function nivelRoleGroup(adjuntos, responsables, docentes, nivelId) {
+function nivelRoleGroup(adjuntos, responsables, docentes, nivelId, ciclo) {
   const personas = [
     ...adjuntos.map(id => ({ id, rol: "Adjunto" })),
     ...responsables.map(id => ({ id, rol: "Resp. nivel" }))
@@ -297,6 +293,7 @@ function nivelRoleGroup(adjuntos, responsables, docentes, nivelId) {
             data-nombre-comision=""
             data-taller=""
             data-equipo=""
+            data-ciclo="${escapeHTML(ciclo || CURRENT_YEAR)}"
           >
             <div class="avatar">${avatar}</div>
             <div class="info">
@@ -476,13 +473,15 @@ function render(tables) {
 
     splitIds(jefatura["A cargo"]).forEach(id => {
       html += docenteCard(id, docentes, "Titular", "principal", {
-        nivel: "General"
+        nivel: "General",
+        ciclo: CURRENT_YEAR
       });
     });
 
     splitIds(jefatura.Adjunto).forEach(id => {
       html += docenteCard(id, docentes, "Adjunta", "principal", {
-        nivel: "General"
+        nivel: "General",
+        ciclo: CURRENT_YEAR
       });
     });
 
@@ -531,7 +530,7 @@ function render(tables) {
         <div class="level-head-base"></div>
 
         <div class="level-team">
-          ${nivelRoleGroup(adjuntos, responsables, docentes, nivelId)}
+          ${nivelRoleGroup(adjuntos, responsables, docentes, nivelId, CURRENT_YEAR)}
         </div>
 
         <div class="commissions">
@@ -584,7 +583,8 @@ function render(tables) {
                       comision: comisionId,
                       nombreComision,
                       taller: com.Taller,
-                      equipo: nombreEquipo
+                      equipo: nombreEquipo,
+                      ciclo: CURRENT_YEAR
                     });
                   }).join("")}
                 </div>
@@ -638,6 +638,7 @@ function abrirLightbox(card) {
   if (!lightbox || !lightboxCard || !photo || !name || !apodo || !nivel || !taller || !comision || !equipo) return;
 
   const foto = driveImageUrl(docente.Foto);
+  const ciclo = card.dataset.ciclo || CURRENT_YEAR;
 
   lightboxCard.classList.toggle(
     "lightbox-nivel-rol",
@@ -652,10 +653,12 @@ function abrirLightbox(card) {
   apodo.textContent = docente.Apodo ? capitalizar(docente.Apodo) : "";
 
   if (card.dataset.nivel === "General") {
-    nivel.textContent = card.dataset.rol === "Adjunta" ? "Adjunta de cátedra" : "Titular de cátedra";
+    nivel.textContent = card.dataset.rol === "Adjunta"
+      ? `Adjunta de cátedra, año ${ciclo}`
+      : `Titular de cátedra, año ${ciclo}`;
   } else {
     nivel.textContent = card.dataset.nivel
-      ? `Nivel ${card.dataset.nivel}`
+      ? `Nivel ${card.dataset.nivel}, año ${ciclo}`
       : "";
   }
 
@@ -832,12 +835,12 @@ async function init() {
 
     render(tables);
 
-$yearSelector?.addEventListener("change", e => {
-  CURRENT_YEAR = e.target.value;
-  resetCollapses();
-  actualizarURLConAnio(CURRENT_YEAR);
-  renderConTransicion(tables);
-});
+    $yearSelector?.addEventListener("change", e => {
+      CURRENT_YEAR = e.target.value;
+      resetCollapses();
+      actualizarURLConAnio(CURRENT_YEAR);
+      renderConTransicion(tables);
+    });
 
     window.addEventListener("popstate", () => {
       const anioURL = getAnioDesdeURL();
@@ -845,14 +848,14 @@ $yearSelector?.addEventListener("change", e => {
 
       if (!anioURL || !aniosDisponibles.includes(anioURL)) return;
 
-CURRENT_YEAR = anioURL;
-resetCollapses();
+      CURRENT_YEAR = anioURL;
+      resetCollapses();
 
-if ($yearSelector) {
-  $yearSelector.value = CURRENT_YEAR;
-}
+      if ($yearSelector) {
+        $yearSelector.value = CURRENT_YEAR;
+      }
 
-renderConTransicion(tables);
+      renderConTransicion(tables);
     });
   } catch (error) {
     console.error(error);
