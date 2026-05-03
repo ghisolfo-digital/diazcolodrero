@@ -536,12 +536,13 @@ document.addEventListener("click", e => {
 });
 
 document.addEventListener("click", e => {
-  const toggle = e.target.closest(".commission-toggle");
-  if (!toggle) return;
+  const header = e.target.closest(".commission-header");
+  if (!header) return;
 
-  const commission = toggle.closest(".commission");
+  const commission = header.closest(".commission");
   if (!commission) return;
 
+  const toggle = commission.querySelector(".commission-toggle");
   const key = commission.dataset.commissionKey;
   const quedaPlegada = !commission.classList.contains("is-collapsed");
 
@@ -555,8 +556,10 @@ document.addEventListener("click", e => {
     }
   }
 
-  toggle.setAttribute("aria-expanded", quedaPlegada ? "false" : "true");
-  toggle.setAttribute("aria-label", quedaPlegada ? "Desplegar comisión" : "Plegar comisión");
+  if (toggle) {
+    toggle.setAttribute("aria-expanded", quedaPlegada ? "false" : "true");
+    toggle.setAttribute("aria-label", quedaPlegada ? "Desplegar comisión" : "Plegar comisión");
+  }
 });
 
 document.addEventListener("keydown", e => {

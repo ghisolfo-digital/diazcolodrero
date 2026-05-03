@@ -194,6 +194,10 @@ h1 {
   flex: 1;
 }
 
+.commission-header {
+  cursor: pointer;
+}
+
 .commission-toggle {
   flex: 0 0 auto;
   width: 32px;
@@ -203,31 +207,38 @@ h1 {
   border: 1px solid #c9c9c0;
   border-radius: 999px;
   background: #fff;
-  color: #595957;
+  color: #8a8a84;
   font-family: inherit;
   font-size: 22px;
   line-height: 1;
   cursor: pointer;
-  transition: transform .18s ease, background .18s ease, border-color .18s ease;
+  padding: 0;
+  transform: none;
+  transition: background .18s ease, border-color .18s ease, color .18s ease;
 }
 
 .commission-toggle span {
   display: block;
-  transform: translateY(-1px);
+  width: 1em;
+  height: 1em;
+  line-height: 1em;
+  transform-origin: 50% 50%;
+  transform: rotate(0deg);
   transition: transform .18s ease;
 }
 
-.commission-toggle:hover {
+.commission-header:hover .commission-toggle {
+  background: #ece810;
   border-color: #000;
   color: #000;
 }
 
-.commission.is-collapsed .commission-team {
-  display: none;
+.commission.is-collapsed .commission-toggle span {
+  transform: rotate(-90deg);
 }
 
-.commission.is-collapsed .commission-toggle span {
-  transform: rotate(-90deg) translateX(1px);
+.commission.is-collapsed .commission-team {
+  display: none;
 }
 
 .aula {
